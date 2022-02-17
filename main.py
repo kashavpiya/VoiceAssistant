@@ -36,7 +36,7 @@ def take_command():
 
 
 def run_alexa(command):
-    #command = take_command()
+    # command = take_command()
     print(command)
     if 'play' in command:
         song = command.replace('play', '')
