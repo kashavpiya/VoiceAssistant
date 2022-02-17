@@ -4,6 +4,7 @@ import pyaudio
 import pywhatkit
 import datetime
 import wikipedia
+import pyjokes
 
 
 listener = sr.Recognizer()
@@ -23,8 +24,8 @@ def take_command():
             voice = listener.listen(source)
             command = listener.recognize_google(voice)
             command = command.lower()
-            if 'quinn' in command:
-                command = command.replace('quinn', '')
+            if 'alexa' in command:
+                command = command.replace('alexa', '')
                 print(command)
 
     except:
@@ -47,5 +48,9 @@ def run_alexa():
         info = wikipedia.summary(person, 1)
         print(info)
         talk(info)
+    elif 'joke' in command:
+        joke = pyjokes.get_joke()
+        print(joke)
+        talk(joke)
 
 run_alexa()
