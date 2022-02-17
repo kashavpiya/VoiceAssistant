@@ -6,11 +6,11 @@ import datetime
 import wikipedia
 import pyjokes
 
-
 listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
+
 
 def talk(text):
     engine.say(text)
@@ -28,12 +28,15 @@ def take_command():
                 command = command.replace('alexa', '')
                 print(command)
 
-    except:
-        pass
+    except Exception as e:
+        talk("Pardon me, please say that again")
+        return "None"
+
     return command
 
-def run_alexa():
-    command = take_command()
+
+def run_alexa(command):
+    #command = take_command()
     print(command)
     if 'play' in command:
         song = command.replace('play', '')
@@ -53,4 +56,12 @@ def run_alexa():
         print(joke)
         talk(joke)
 
-run_alexa()
+
+if __name__ == '__main__':
+
+    while True:
+        talk("Tell me how can I help you?")
+        statement = take_command().lower()
+        if statement == 0:
+            continue
+        run_alexa(statement)
