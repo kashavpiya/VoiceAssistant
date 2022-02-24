@@ -1,5 +1,4 @@
 import webbrowser
-
 import speech_recognition as sr
 import pyttsx3
 import pyaudio
@@ -8,6 +7,7 @@ import datetime
 import wikipedia
 import pyjokes
 import time
+
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -30,9 +30,6 @@ def take_command():
             if 'alexa' in command:
                 command = command.replace('alexa', '')
                 print(command)
-            else:
-                return
-
 
     except Exception as e:
         talk("Pardon me, please say that again")
@@ -77,9 +74,6 @@ def run_alexa(command):
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
-
-
-
 
 
 if __name__ == '__main__':
