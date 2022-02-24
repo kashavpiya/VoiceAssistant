@@ -1,3 +1,5 @@
+import webbrowser
+
 import speech_recognition as sr
 import pyttsx3
 import pyaudio
@@ -5,11 +7,12 @@ import pywhatkit
 import datetime
 import wikipedia
 import pyjokes
+import time
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
+engine.setProperty('voice', voices[1].id) #id 1 represents female voice, id 0 represents male voice
 
 
 def talk(text):
@@ -27,6 +30,9 @@ def take_command():
             if 'alexa' in command:
                 command = command.replace('alexa', '')
                 print(command)
+            else:
+                return
+
 
     except Exception as e:
         talk("Pardon me, please say that again")
@@ -55,6 +61,25 @@ def run_alexa(command):
         joke = pyjokes.get_joke()
         print(joke)
         talk(joke)
+    elif 'open youtube' in command:
+        webbrowser.open_new_tab("https://www.youtube.com")
+        talk("Opening YouTube")
+        time.sleep(5)
+    elif 'open gmail' in command:
+        webbrowser.open_new_tab("https://www.gmail.com")
+        talk("Opening Gmail")
+        time.sleep(5)
+    elif 'open google' in command:
+        webbrowser.open_new_tab("https://www.google.com")
+        talk("Opening Google")
+        time.sleep(5)
+    elif 'open calendar' in command:
+        webbrowser.open_new_tab("https://calendar.google.com")
+        talk("Opening your calendar")
+        time.sleep(5)
+
+
+
 
 
 if __name__ == '__main__':
