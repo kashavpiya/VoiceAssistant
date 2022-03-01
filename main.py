@@ -90,7 +90,7 @@ def run_alexa(command):
         talk("Opening your calendar")
         time.sleep(5)
     elif 'weather' in command: #not working yet, figuring it out
-        api_key = "W6W2J9-3WH2EWV7LP"
+        api_key = "16c8799fa07c2c88d57860b4aa8aa682"
         base_url = "https://api.openweathermap.org/data/2.5/weather?"
         talk("What is the name of your city?")
         city = sec_command()
@@ -98,6 +98,7 @@ def run_alexa(command):
         response = requests.get(complete_url)
         x = response.json()
         if x["cod"] != "404":
+            print(x)
             y = x["main"]
             current_temperature = y["temp"]
             current_humidiy = y["humidity"]
