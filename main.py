@@ -30,6 +30,9 @@ def take_command():
             if 'alexa' in command:
                 command = command.replace('alexa', '')
                 print(command)
+            else:
+                return "None"
+
 
     except Exception as e:
         talk("Pardon me, please say that again")
@@ -74,13 +77,20 @@ def run_alexa(command):
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
+    elif 'stop' in command:
+        return
 
 
 if __name__ == '__main__':
 
     while True:
+        time.sleep(2)
         talk("Tell me how can I help you?")
         statement = take_command().lower()
         if statement == 0:
             continue
-        run_alexa(statement)
+        elif 'stop' in statement:
+            talk("Personal Voice Assistant Shutting Down")
+            exit()
+        else:
+            run_alexa(statement)
