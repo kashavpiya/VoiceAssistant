@@ -91,7 +91,7 @@ def run_alexa(command):
         talk("Opening your calendar")
         time.sleep(5)
     elif 'weather' in command: #not working yet, figuring it out (gives invalid API key error)
-        api_key = "16c8799fa07c2c88d57860b4aa8aa682"
+        api_key = "#################"
         base_url = "https://api.openweathermap.org/data/2.5/weather?"
         talk("What is the name of your city?")
         city = sec_command()
