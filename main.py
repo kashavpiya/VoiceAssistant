@@ -10,6 +10,7 @@ import time
 import requests
 import json
 import wolframalpha
+import ecapture as ec
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -89,7 +90,7 @@ def run_alexa(command):
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
-    elif 'weather' in command: #not working yet, figuring it out
+    elif 'weather' in command: #not working yet, figuring it out (gives invalid API key error)
         api_key = "16c8799fa07c2c88d57860b4aa8aa682"
         base_url = "https://api.openweathermap.org/data/2.5/weather?"
         talk("What is the name of your city?")
@@ -116,10 +117,12 @@ def run_alexa(command):
                   str(current_humidiy) +
                   "\n description = " +
                   str(weather_description))
-
+    elif "camera" in command or "take a photo" in command:
+        ec.capture(0, "robo camera", "img.jpg")
 
     elif 'stop' in command:
         return
+
 
 def sec_command():
     with sr.Microphone() as source:
