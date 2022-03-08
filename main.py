@@ -8,8 +8,9 @@ import wikipedia
 import pyjokes
 import time
 import requests
-import json
-import wolframalpha
+#import json
+#import wolframalpha
+#import ecapture as ec
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -53,9 +54,9 @@ def run_alexa(command):
     elif 'who are you' in command:
         talk("I am Alexa, your personal voice assistant or something like that, I don't really know yet.")
     elif 'time' in command:
-        time = datetime.datetime.now().strftime('%I:%M %p')
-        print(time)
-        talk("The current time is" + time)
+        timer = datetime.datetime.now().strftime('%I:%M %p')
+        print(timer)
+        talk("The current time is" + timer)
     elif 'who is' in command:
         person = command.replace('who is', '')
         info = wikipedia.summary(person, 1)
@@ -89,8 +90,8 @@ def run_alexa(command):
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
-    elif 'weather' in command: #not working yet, figuring it out
-        api_key = "16c8799fa07c2c88d57860b4aa8aa682"
+    elif 'weather' in command: #not working yet, figuring it out (gives invalid API key error)
+        api_key = "#################"
         base_url = "https://api.openweathermap.org/data/2.5/weather?"
         talk("What is the name of your city?")
         city = sec_command()
@@ -116,10 +117,12 @@ def run_alexa(command):
                   str(current_humidiy) +
                   "\n description = " +
                   str(weather_description))
-
+    #elif "camera" in command or "take a photo" in command:
+       # ec.capture(0, "robo camera", "img.jpg")
 
     elif 'stop' in command:
         return
+
 
 def sec_command():
     with sr.Microphone() as source:
