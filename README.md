@@ -8,3 +8,19 @@ do this in terminal
   pip install pipwin
   pipwin install pyaudio
 ```
+List of packages needed:
+- PyAudio
+- wave
+- argparse
+- time
+- os
+- speech_recognition
+- pyttsx3
+- pywhatkit
+- datetime
+- wikipedia
+- pyjokes
+- requests
+- json
+- wolframalpha
+- ecapture
