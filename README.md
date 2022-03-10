@@ -1,5 +1,5 @@
 # VoiceAssistant
-Need to install different packages including webbrowser, speech_recognition, pyttsx3, pyaudio, pywhatkit, datetime, wikipedia, pyjokes, time.
+Interpreter: Python 3.10
 
 Installing PyAudio might cause problems in some computers depending on version of Python
 Either roll back to 3.6 version of Python or 
