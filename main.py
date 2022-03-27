@@ -12,7 +12,7 @@ import requests
 #import wolframalpha
 #import ecapture as ec
 
-listener = sr.Recognizer()
+listener = sr.Recognizer() #this is the part that we have to replace
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id) #id 1 represents female voice, id 0 represents male voice
