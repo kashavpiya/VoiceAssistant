@@ -63,6 +63,10 @@ def run_alexa(command):
         talk("According to Wikipedia,")
         print(info)
         talk(info)
+    elif 'open wikipedia' in command:
+        webbrowser.open_new_tab("https://en.wikipedia.org/wiki/Main_Page")
+        talk("Opening Wikipedia")
+        time.sleep(5)
     elif 'wikipedia' in command:
         talk('Searching wikipedia...')
         command = command.replace("wikipedia","")
@@ -122,6 +126,12 @@ def run_alexa(command):
 
     elif 'stop' in command:
         return
+    #work on the day
+    #fact of the day
+    #this day in history
+    #quote of the day
+
+    #instead of training new model, we could change the frequency to female voice so that it can better recognize it
 
 
 def sec_command():

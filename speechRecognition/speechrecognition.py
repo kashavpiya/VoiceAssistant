@@ -3,5 +3,3 @@ import ctcdecode
 import torch
 
 textprocess = TextProcess()
-
-labels
