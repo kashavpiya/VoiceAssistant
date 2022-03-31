@@ -11,6 +11,17 @@ import requests
 #import json
 #import wolframalpha
 #import ecapture as ec
+from requests_futures.sessions import FuturesSession
+from pprint import pprint
+from HTMLParser import HTMLParser
+import re
+import sys
+
+import numpy as np
+import soundfile as sf
+import librosa
+
+
 
 listener = sr.Recognizer() #this is the part that we have to replace
 engine = pyttsx3.init()
@@ -129,10 +140,15 @@ def run_alexa(command):
     #work on the day
     #fact of the day
     #this day in history
-    #quote of the day
+
 
     #instead of training new model, we could change the frequency to female voice so that it can better recognize it
-
+    elif 'quote' in command:
+        r = get_quotes(num=1)
+        val = extract_quote(r)
+        sentence = val[0] + " by " + val[1]
+        print(sentence)
+        talk(sentence)
 
 def sec_command():
     with sr.Microphone() as source:
@@ -142,6 +158,47 @@ def sec_command():
         command = command.lower()
         print(command)
         return command
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
+def get_quotes(num):
+    futures = []
+    url = "http://www.quotedb.com/quote/quote.php?action=random_quote"
+    session = FuturesSession()
+    return futures.append(session.get(url))
+
+def extract_quote(text):
+    matches = re.findall(r'document.write\(\'(.*)\'\)', text)
+    if not matches or len(matches) != 2:
+        return None
+    quote = strip_tags(matches[0])
+    author = re.search(r'More quotes from (.*)', strip_tags(matches[1]))
+    if author:
+        author = author.group(1)
+    return (quote, author)
+
+#takes .wav variable and returns a numpy array
+def wav_to_numpy_arr(sound):
+    return sf.write(sound, testArray, 48000)
+
+
+#signal = numpy array that is our waveform
+#sr  = sample rate
+#num_semitone = number of semitones we want to scale the audio up or down the signal. Positive number is going up, negative is going down
+#def change_pitch(signal, sr, num_semitone):
+#    return librosa.return.pitch_shift(singal, sr, num_semitone)
 
 if __name__ == '__main__':
     talk("Greetings, I am your personal voice assistant.")
@@ -156,3 +213,5 @@ if __name__ == '__main__':
         else:
             run_alexa(statement)
         time.sleep(2)
+
+
