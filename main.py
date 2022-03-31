@@ -12,6 +12,7 @@ import requests
 #import wolframalpha
 #import ecapture as ec
 from requests_futures.sessions import FuturesSession
+import re
 from pprint import pprint
 from HTMLParser import HTMLParser
 import re
@@ -19,6 +20,7 @@ import sys
 import numpy as np
 import soundfile as sf
 import librosa
+from bs4 import BeautifulSoup
 
 #Hi Kashav
 
@@ -104,35 +106,43 @@ def run_alexa(command):
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
-    elif 'weather' in command: #not working yet, figuring it out (gives invalid API key error)
-        api_key = "#################"
-        base_url = "https://api.openweathermap.org/data/2.5/weather?"
-        talk("What is the name of your city?")
-        city = sec_command()
-        complete_url = base_url + "appid ="+api_key+"&q=" + city
-        response = requests.get(complete_url)
-        x = response.json()
-        if x["cod"] != "404":
-            print(x)
-            y = x["main"]
-            current_temperature = y["temp"]
-            current_humidiy = y["humidity"]
-            z = x["weather"]
-            weather_description = z[0]["description"]
-            talk(" Temperature in kelvin unit is " +
-                  str(current_temperature) +
-                  "\n humidity in percentage is " +
-                  str(current_humidiy) +
-                  "\n description  " +
-                  str(weather_description))
-            print(" Temperature in kelvin unit = " +
-                  str(current_temperature) +
-                  "\n humidity (in percentage) = " +
-                  str(current_humidiy) +
-                  "\n description = " +
-                  str(weather_description))
-    #elif "camera" in command or "take a photo" in command:
-       # ec.capture(0, "robo camera", "img.jpg")
+    elif 'where is' in command:
+        print('..')
+        words = command.split('where is')
+        print(words[-1])
+        link = str(words[-1])
+        link = re.sub(' ', '', link)
+        talk('Locating')
+        time.sleep(3)
+        talk(link)
+        time.sleep(5)
+        link = f'https://www.google.co.in/maps/place/{link}'
+        print(link)
+        webbrowser.open(link)
+    elif 'meaning' in command:
+        print('..')
+        words = command.split(' ')
+        word = words[-1]
+        scrape_url = 'https://www.oxfordlearnersdictionaries.com/definition/english/' + word
+        print(words[-1])
+        headers = {"User-Agent": ""}
+        web_response = requests.get(scrape_url, headers=headers)
+
+        if web_response.status_code == 200:
+            soup = BeautifulSoup(web_response.text, 'html.parser')
+
+            try:
+                # show_origin(soup)
+                show_definitions(soup)
+            except AttributeError:
+                talk('Word not found!!')
+        else:
+            talk('Failed to get response...')
+    elif 'weather' in command:  # not working yet, figuring it out (gives invalid API key error)
+        print('..')
+        words = command.split('in')
+        print(words[-1])
+        scrape_weather(words[-1])
 
     elif 'stop' in command:
         return
@@ -148,6 +158,58 @@ def run_alexa(command):
         sentence = val[0] + " by " + val[1]
         print(sentence)
         talk(sentence)
+def scrape_weather(city):
+    url = 'https://www.google.com/search?q=accuweather+' + city
+    page = requests.get(url)
+
+
+    soup = BeautifulSoup(page.text, 'lxml')
+    links = [a['href'] for a in soup.findAll('a')]
+    link = str(links[16])
+    link = link.split('=')
+    link = str(link[1]).split('&')
+    link = link[0]
+
+    page = requests.get(link, headers={'User-Agent': 'Mozilla/5.0'})
+    soup = BeautifulSoup(page.content, 'lxml')
+
+    time = soup.find('p', attrs={'class': 'cur-con-weather-card__subtitle'})
+    time = re.sub('\n', '', time.text)
+    time = re.sub('\t', '', time)
+    time = 'Time: ' + time
+    temperature = soup.find('div', attrs={'class': 'temp'})
+    temperature = 'Temperature: ' + temperature.text
+
+    realfeel = soup.find('div', attrs={'class': 'real-feel'})
+    realfeel = re.sub('\n', '', realfeel.text)
+    realfeel = re.sub('\t', '', realfeel)
+    realfeel = 'RealFeel: ' + realfeel[-3:] + 'C'
+    climate = soup.find('span', attrs={'class': 'phrase'})
+    climate = "Climate: " + climate.text
+
+    info = 'For more information visit: ' + link
+
+    print('The weather for today is: ')
+    print(time)
+    print(temperature)
+    print(realfeel)
+    print(climate)
+    print(info)
+    talk('The weather for today is: ')
+    talk(time)
+    talk(temperature)
+    talk(realfeel)
+    talk(climate)
+    talk('For more information visit accuweather.com')
+    time.sleep(5)
+def show_definitions(soup):
+    print()
+    senseList = []
+    senses = soup.find_all('li', class_='sense')
+    for s in senses:
+        definition = s.find('span', class_='def').text
+        talk(definition)
+        time.sleep(5)
 
 def sec_command():
     with sr.Microphone() as source:
