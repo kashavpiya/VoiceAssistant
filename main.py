@@ -1,3 +1,8 @@
+#this program is the main part of our Voice Assistant, while the program is running, our Voice Assistant is listening to the
+#voice commands that we give, its functionality is limited to the functions that we have created for it to perform
+#there is always room for adding new and more interactive features for the program
+
+
 import webbrowser
 import speech_recognition as sr
 import pyttsx3
@@ -8,10 +13,10 @@ import wikipedia
 import pyjokes
 import time
 import requests
-#import json
 #import wolframalpha
 #import ecapture as ec
 from requests_futures.sessions import FuturesSession
+import json
 import re
 from pprint import pprint
 from HTMLParser import HTMLParser
@@ -22,19 +27,29 @@ import soundfile as sf
 import librosa
 from bs4 import BeautifulSoup
 
-#Hi Kashav
 
-listener = sr.Recognizer() #this is the part that we have to replace
+
+listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id) #id 1 represents female voice, id 0 represents male voice
 
 
+
+#this function is used for the voice assistant to talk
+#it uses text to speech to work properly
+#does not return anything
 def talk(text):
     engine.say(text)
     engine.runAndWait()
 
 
+
+#this function is used to take command from the user
+#whenever the function is called, it will start listening, convert speech to text,
+#replaces the wakeword with a blank space
+#if the wake word is detected in the command, the string with the command is return,
+# else none is returned
 def take_command():
     try:
         with sr.Microphone() as source:
@@ -56,6 +71,9 @@ def take_command():
     return command
 
 
+
+#this function is the conditional function of the virtual assistant where all the conditions
+#for each command is provided.
 def run_alexa(command):
     # command = take_command()
     print(command)
@@ -138,7 +156,7 @@ def run_alexa(command):
                 talk('Word not found!!')
         else:
             talk('Failed to get response...')
-    elif 'weather' in command:  # not working yet, figuring it out (gives invalid API key error)
+    elif 'weather' in command:
         print('..')
         words = command.split('in')
         print(words[-1])
@@ -155,9 +173,15 @@ def run_alexa(command):
     elif 'quote' in command:
         r = get_quotes(num=1)
         val = extract_quote(r)
-        sentence = val[0] + " by " + val[1]
-        print(sentence)
-        talk(sentence)
+        print(val)
+        talk(val)
+
+def extract_quote(text):
+    #text = text[:-3]
+    text.replace("document.write('", "")
+    text.replace(".'); document.write('More quotes ", "")
+    return text
+
 def scrape_weather(city):
     url = 'https://www.google.com/search?q=accuweather+' + city
     page = requests.get(url)
@@ -235,24 +259,26 @@ def strip_tags(html):
     return s.get_data()
 
 def get_quotes(num):
-    futures = []
     url = "http://www.quotedb.com/quote/quote.php?action=random_quote"
     session = FuturesSession()
-    return futures.append(session.get(url))
+    return session.get(url)
 
-def extract_quote(text):
-    matches = re.findall(r'document.write\(\'(.*)\'\)', text)
-    if not matches or len(matches) != 2:
-        return None
-    quote = strip_tags(matches[0])
-    author = re.search(r'More quotes from (.*)', strip_tags(matches[1]))
-    if author:
-        author = author.group(1)
-    return (quote, author)
+
+
+
+# def extract_quote(text):
+#     matches = re.findall(r'document.write\(\'(.*)\'\)', text)
+#     if not matches or len(matches) != 2:
+#         return None
+#     quote = strip_tags(matches[0])
+#     author = re.search(r'More quotes from (.*)', strip_tags(matches[1]))
+#     if author:
+#         author = author.group(1)
+#     return (quote, author)
 
 #takes .wav variable and returns a numpy array
-def wav_to_numpy_arr(sound):
-    return sf.write(sound, testArray, 48000)
+#def wav_to_numpy_arr(sound):
+#    return sf.write(sound, testArray, 48000)
 
 
 #signal = numpy array that is our waveform
