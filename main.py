@@ -1,7 +1,15 @@
-#this program is the main part of our Voice Assistant, while the program is running, our Voice Assistant is listening to the
-#voice commands that we give, its functionality is limited to the functions that we have created for it to perform
-#there is always room for adding new and more interactive features for the program
+"""
+this program is the main part of our Voice Assistant, while the program is running, our Voice Assistant is listening to the
+voice commands that we give, its functionality is limited to the functions that we have created for it to perform
+there is always room for adding new and more interactive features for the program
+"""
 
+"""
+Contributions:
+Estephanos - Weather Scrapping, Where is, and Meaning of words functionality
+Srijal - Working on changing pitch of the voice, Quote of the day
+Kashav - Building the Voice Assistant, and remaining functionalities
+"""
 
 import webbrowser
 import speech_recognition as sr
@@ -35,21 +43,24 @@ voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id) #id 1 represents female voice, id 0 represents male voice
 
 
-
-#this function is used for the voice assistant to talk
-#it uses text to speech to work properly
-#does not return anything
+"""
+this function is used for the voice assistant to talk
+it uses text to speech to work properly
+does not return anything
+"""
 def talk(text):
     engine.say(text)
     engine.runAndWait()
 
 
 
-#this function is used to take command from the user
-#whenever the function is called, it will start listening, convert speech to text,
-#replaces the wakeword with a blank space
-#if the wake word is detected in the command, the string with the command is return,
-# else none is returned
+"""
+this function is used to take command from the user
+whenever the function is called, it will start listening, convert speech to text,
+replaces the wakeword with a blank space
+if the wake word is detected in the command, the string with the command is return,
+else none is returned 
+"""
 def take_command():
     try:
         with sr.Microphone() as source:
@@ -71,73 +82,99 @@ def take_command():
     return command
 
 
-
-#this function is the conditional function of the virtual assistant where all the conditions
-#for each command is provided.
+"""
+this function is the conditional function of the virtual assistant where all the conditions
+for each command is provided.
+"""
 def run_alexa(command):
-    # command = take_command()
+
     print(command)
-    if 'play' in command:
+
+    if 'play' in command: #plays any song or video on youtube
         song = command.replace('play', '')
         talk('playing' + song)
         pywhatkit.playonyt(song)
-    elif 'who are you' in command:
+
+
+    elif 'who are you' in command: #ask alexa about itself
         talk("I am Alexa, your personal voice assistant or something like that, I don't really know yet.")
-    elif 'time' in command:
+
+
+    elif 'time' in command: #ask about time
         timer = datetime.datetime.now().strftime('%I:%M %p')
         print(timer)
         talk("The current time is" + timer)
-    elif 'who is' in command:
+
+
+    elif 'who is' in command: #ask who a person or a name is
         person = command.replace('who is', '')
         info = wikipedia.summary(person, 1)
         talk("According to Wikipedia,")
         print(info)
         talk(info)
-    elif 'open wikipedia' in command:
+
+
+    elif 'open wikipedia' in command: #open wikipedia
         webbrowser.open_new_tab("https://en.wikipedia.org/wiki/Main_Page")
         talk("Opening Wikipedia")
         time.sleep(5)
-    elif 'wikipedia' in command:
+
+
+    elif 'wikipedia' in command: #open wikipedia to search any info
         talk('Searching wikipedia...')
         command = command.replace("wikipedia","")
         info = wikipedia.summary(command, sentences=2)
         talk("According to Wikipedia,")
         print(info)
         talk(info)
-    elif 'joke' in command:
+
+
+    elif 'joke' in command: #alexa tells you a joke
         joke = pyjokes.get_joke()
         print(joke)
         talk(joke)
-    elif 'open youtube' in command:
+
+
+    elif 'open youtube' in command: #opens youtube
         webbrowser.open_new_tab("https://www.youtube.com")
         talk("Opening YouTube")
         time.sleep(5)
-    elif 'open gmail' in command:
+
+
+    elif 'open gmail' in command: #opens your gmail if logged in
         webbrowser.open_new_tab("https://www.gmail.com")
         talk("Opening Gmail")
         time.sleep(5)
-    elif 'open google' in command:
+
+
+    elif 'open google' in command: #opens google search page
         webbrowser.open_new_tab("https://www.google.com")
         talk("Opening Google")
         time.sleep(5)
-    elif 'open calendar' in command:
+
+
+    elif 'open calendar' in command: #opens google calendar if logged in
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
-    elif 'where is' in command:
+
+
+    elif 'where is' in command: #tells you where a place is
         print('..')
         words = command.split('where is')
         print(words[-1])
         link = str(words[-1])
         link = re.sub(' ', '', link)
         talk('Locating')
-        time.sleep(3)
+        time.sleep(2)
         talk(link)
-        time.sleep(5)
+        time.sleep(4)
         link = f'https://www.google.co.in/maps/place/{link}'
         print(link)
         webbrowser.open(link)
-    elif 'meaning' in command:
+
+
+    elif 'meaning' in command: #tells you the meaning of a word
         print('..')
         words = command.split(' ')
         word = words[-1]
@@ -156,33 +193,50 @@ def run_alexa(command):
                 talk('Word not found!!')
         else:
             talk('Failed to get response...')
-    elif 'weather' in command:
+
+
+
+    elif 'weather' in command: #tells you what the weather is in your location
         print('..')
         words = command.split('in')
         print(words[-1])
         scrape_weather(words[-1])
 
-    elif 'stop' in command:
+
+    elif 'stop' in command: # tells alexa to stop talking, alexa shuts down
         return
+
     #work on the day
     #fact of the day
     #this day in history
 
 
-    #instead of training new model, we could change the frequency to female voice so that it can better recognize it
-    elif 'quote' in command:
+
+    elif 'quote' in command: # gives you a quote
         r = get_quotes(num=1)
         val = extract_quote(r)
         print(val)
         talk(val)
 
-def extract_quote(text):
+
+"""
+Supporting function for the conditions above
+"""
+
+def extract_quote(text): #supports the condition that gives you  a quote
     #text = text[:-3]
     text.replace("document.write('", "")
     text.replace(".'); document.write('More quotes ", "")
     return text
 
-def scrape_weather(city):
+
+def get_quotes(num): #supports the condition that gives you  a quote
+    url = "http://www.quotedb.com/quote/quote.php?action=random_quote"
+    session = FuturesSession()
+    return session.get(url)
+
+
+def scrape_weather(city): # supports the condition that returns the weather
     url = 'https://www.google.com/search?q=accuweather+' + city
     page = requests.get(url)
 
@@ -226,7 +280,10 @@ def scrape_weather(city):
     talk(climate)
     talk('For more information visit accuweather.com')
     time.sleep(5)
-def show_definitions(soup):
+
+
+
+def show_definitions(soup): # supports the condition that gives you the meaning of the words
     print()
     senseList = []
     senses = soup.find_all('li', class_='sense')
@@ -234,6 +291,7 @@ def show_definitions(soup):
         definition = s.find('span', class_='def').text
         talk(definition)
         time.sleep(5)
+
 
 def sec_command():
     with sr.Microphone() as source:
@@ -244,6 +302,7 @@ def sec_command():
         print(command)
         return command
 
+
 class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()
@@ -253,40 +312,45 @@ class MLStripper(HTMLParser):
     def get_data(self):
         return ''.join(self.fed)
 
+
 def strip_tags(html):
     s = MLStripper()
     s.feed(html)
     return s.get_data()
 
-def get_quotes(num):
-    url = "http://www.quotedb.com/quote/quote.php?action=random_quote"
-    session = FuturesSession()
-    return session.get(url)
 
 
 
+"""
+this part is not completed yet, but it is intended to be used later to change the pitch of the voices
 
-# def extract_quote(text):
-#     matches = re.findall(r'document.write\(\'(.*)\'\)', text)
-#     if not matches or len(matches) != 2:
-#         return None
-#     quote = strip_tags(matches[0])
-#     author = re.search(r'More quotes from (.*)', strip_tags(matches[1]))
-#     if author:
-#         author = author.group(1)
-#     return (quote, author)
+def extract_quote(text):
+    matches = re.findall(r'document.write\(\'(.*)\'\)', text)
+    if not matches or len(matches) != 2:
+        return None
+    quote = strip_tags(matches[0])
+    author = re.search(r'More quotes from (.*)', strip_tags(matches[1]))
+    if author:
+        author = author.group(1)
+    return (quote, author)
 
 #takes .wav variable and returns a numpy array
-#def wav_to_numpy_arr(sound):
-#    return sf.write(sound, testArray, 48000)
+def wav_to_numpy_arr(sound):
+    return sf.write(sound, testArray, 48000)
 
 
 #signal = numpy array that is our waveform
 #sr  = sample rate
 #num_semitone = number of semitones we want to scale the audio up or down the signal. Positive number is going up, negative is going down
-#def change_pitch(signal, sr, num_semitone):
-#    return librosa.return.pitch_shift(singal, sr, num_semitone)
+def change_pitch(signal, sr, num_semitone):
+    return librosa.return.pitch_shift(singal, sr, num_semitone)
 
+"""
+
+
+"""
+this is the main function where the entire program starts
+"""
 if __name__ == '__main__':
     talk("Greetings, I am your personal voice assistant.")
     while True:
