@@ -90,23 +90,27 @@ def run_alexa(command):
 
     print(command)
 
-    if 'play' in command: #plays any song or video on youtube
+    # plays any song or video on youtube
+    if 'play' in command:
         song = command.replace('play', '')
         talk('playing' + song)
         pywhatkit.playonyt(song)
 
 
-    elif 'who are you' in command: #ask alexa about itself
+    # ask alexa about itself
+    elif 'who are you' in command:
         talk("I am Alexa, your personal voice assistant or something like that, I don't really know yet.")
 
 
-    elif 'time' in command: #ask about time
+    # ask about time
+    elif 'time' in command:
         timer = datetime.datetime.now().strftime('%I:%M %p')
         print(timer)
         talk("The current time is" + timer)
 
 
-    elif 'who is' in command: #ask who a person or a name is
+    # ask who a person or a name is
+    elif 'who is' in command:
         person = command.replace('who is', '')
         info = wikipedia.summary(person, 1)
         talk("According to Wikipedia,")
@@ -114,13 +118,15 @@ def run_alexa(command):
         talk(info)
 
 
-    elif 'open wikipedia' in command: #open wikipedia
+    # open wikipedia
+    elif 'open wikipedia' in command:
         webbrowser.open_new_tab("https://en.wikipedia.org/wiki/Main_Page")
         talk("Opening Wikipedia")
         time.sleep(5)
 
 
-    elif 'wikipedia' in command: #open wikipedia to search any info
+    # open wikipedia to search any info
+    elif 'wikipedia' in command:
         talk('Searching wikipedia...')
         command = command.replace("wikipedia","")
         info = wikipedia.summary(command, sentences=2)
@@ -129,37 +135,43 @@ def run_alexa(command):
         talk(info)
 
 
-    elif 'joke' in command: #alexa tells you a joke
+    # alexa tells you a joke
+    elif 'joke' in command:
         joke = pyjokes.get_joke()
         print(joke)
         talk(joke)
 
 
-    elif 'open youtube' in command: #opens youtube
+    # opens youtube
+    elif 'open youtube' in command:
         webbrowser.open_new_tab("https://www.youtube.com")
         talk("Opening YouTube")
         time.sleep(5)
 
 
-    elif 'open gmail' in command: #opens your gmail if logged in
+    # opens your gmail if logged in
+    elif 'open gmail' in command:
         webbrowser.open_new_tab("https://www.gmail.com")
         talk("Opening Gmail")
         time.sleep(5)
 
 
-    elif 'open google' in command: #opens google search page
+    # opens google search page
+    elif 'open google' in command:
         webbrowser.open_new_tab("https://www.google.com")
         talk("Opening Google")
         time.sleep(5)
 
 
-    elif 'open calendar' in command: #opens google calendar if logged in
+    # opens google calendar if logged in
+    elif 'open calendar' in command:
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
 
 
-    elif 'where is' in command: #tells you where a place is
+    # tells you where a place is
+    elif 'where is' in command:
         print('..')
         words = command.split('where is')
         print(words[-1])
@@ -174,7 +186,8 @@ def run_alexa(command):
         webbrowser.open(link)
 
 
-    elif 'meaning' in command: #tells you the meaning of a word
+    # tells you the meaning of a word
+    elif 'meaning' in command:
         print('..')
         words = command.split(' ')
         word = words[-1]
@@ -196,14 +209,16 @@ def run_alexa(command):
 
 
 
-    elif 'weather' in command: #tells you what the weather is in your location
+    # tells you what the weather is in your location
+    elif 'weather' in command:
         print('..')
         words = command.split('in')
         print(words[-1])
         scrape_weather(words[-1])
 
 
-    elif 'stop' in command: # tells alexa to stop talking, alexa shuts down
+    # tells alexa to stop talking, alexa shuts down
+    elif 'stop' in command:
         return
 
     #work on the day
@@ -211,8 +226,8 @@ def run_alexa(command):
     #this day in history
 
 
-
-    elif 'quote' in command: # gives you a quote
+    # gives you a quote
+    elif 'quote' in command:
         r = get_quotes(num=1)
         val = extract_quote(r)
         print(val)
@@ -223,20 +238,23 @@ def run_alexa(command):
 Supporting function for the conditions above
 """
 
-def extract_quote(text): #supports the condition that gives you  a quote
+#supports the condition that gives you  a quote
+def extract_quote(text):
     #text = text[:-3]
     text.replace("document.write('", "")
     text.replace(".'); document.write('More quotes ", "")
     return text
 
 
-def get_quotes(num): #supports the condition that gives you  a quote
+#supports the condition that gives you  a quote
+def get_quotes(num):
     url = "http://www.quotedb.com/quote/quote.php?action=random_quote"
     session = FuturesSession()
     return session.get(url)
 
 
-def scrape_weather(city): # supports the condition that returns the weather
+# supports the condition that returns the weather
+def scrape_weather(city):
     url = 'https://www.google.com/search?q=accuweather+' + city
     page = requests.get(url)
 
@@ -283,7 +301,8 @@ def scrape_weather(city): # supports the condition that returns the weather
 
 
 
-def show_definitions(soup): # supports the condition that gives you the meaning of the words
+# supports the condition that gives you the meaning of the words
+def show_definitions(soup):
     print()
     senseList = []
     senses = soup.find_all('li', class_='sense')
