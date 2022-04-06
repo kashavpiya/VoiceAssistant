@@ -33,9 +33,12 @@ import sys
 import numpy as np
 import soundfile as sf
 import librosa
+
+#import for quotes
 from bs4 import BeautifulSoup
-
-
+import pandas as pd
+#import requests
+import random
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -228,30 +231,48 @@ def run_alexa(command):
 
     # gives you a quote
     elif 'quote' in command:
-        r = get_quotes(num=1)
-        val = extract_quote(r)
-        print(val)
-        talk(val)
+        authors, quotes = scrape_website(1)
+        text = random_quote(quotes, authors)
+        print(text)
+        talk(text)
 
 
 """
 Supporting function for the conditions above
 """
+# support function for quote to parse quotes from goodreads.com
 
-#supports the condition that gives you  a quote
-def extract_quote(text):
-    #text = text[:-3]
-    text.replace("document.write('", "")
-    text.replace(".'); document.write('More quotes ", "")
-    return text
+def scrape_website(page_number):
+
+    #list for the author and quotes
+    authors = []
+    quotes = []
+
+    # Convert the page numbers to a string and add page number to URL, then make a request to the website
+    page_num = str(page_number)
+    URL = 'https://www.goodreads.com/quotes/tag/inspirational?page=' + page_num
+    webpage = requests.get(URL)
+
+    # Parse the text from the website then get the tag and it's class
+    soup = BeautifulSoup(webpage.text, "html.parser")
+    quoteText = soup.find_all('div', attrs={'class': 'quoteText'})
 
 
-#supports the condition that gives you  a quote
-def get_quotes(num):
-    url = "http://www.quotedb.com/quote/quote.php?action=random_quote"
-    session = FuturesSession()
-    return session.get(url)
+    for i in quoteText:
+        quote = i.text.strip().split('\n')[0]  # Get the text of the current quote, but only the sentence before a new line
+        author = i.find('span', attrs={'class': 'authorOrTitle'}).text.strip()
 
+        quotes.append(quote)
+        authors.append(author)
+
+    return authors, quotes
+
+# support function to give a random quote from list
+
+def random_quote(quoteList, AuthorList):
+    length = len(quoteList)
+    num = random.randrange(length - 1)
+    return quoteList[num] + " by " + AuthorList[num]
 
 # supports the condition that returns the weather
 def scrape_weather(city):
@@ -298,74 +319,6 @@ def scrape_weather(city):
     talk(climate)
     talk('For more information visit accuweather.com')
     time.sleep(5)
-
-
-
-# supports the condition that gives you the meaning of the words
-def show_definitions(soup):
-    print()
-    senseList = []
-    senses = soup.find_all('li', class_='sense')
-    for s in senses:
-        definition = s.find('span', class_='def').text
-        talk(definition)
-        time.sleep(5)
-
-
-def sec_command():
-    with sr.Microphone() as source:
-        print("Listening...")
-        voice = listener.listen(source)
-        command = listener.recognize_google(voice)
-        command = command.lower()
-        print(command)
-        return command
-
-
-class MLStripper(HTMLParser):
-    def __init__(self):
-        self.reset()
-        self.fed = []
-    def handle_data(self, d):
-        self.fed.append(d)
-    def get_data(self):
-        return ''.join(self.fed)
-
-
-def strip_tags(html):
-    s = MLStripper()
-    s.feed(html)
-    return s.get_data()
-
-
-
-
-"""
-this part is not completed yet, but it is intended to be used later to change the pitch of the voices
-
-def extract_quote(text):
-    matches = re.findall(r'document.write\(\'(.*)\'\)', text)
-    if not matches or len(matches) != 2:
-        return None
-    quote = strip_tags(matches[0])
-    author = re.search(r'More quotes from (.*)', strip_tags(matches[1]))
-    if author:
-        author = author.group(1)
-    return (quote, author)
-
-#takes .wav variable and returns a numpy array
-def wav_to_numpy_arr(sound):
-    return sf.write(sound, testArray, 48000)
-
-
-#signal = numpy array that is our waveform
-#sr  = sample rate
-#num_semitone = number of semitones we want to scale the audio up or down the signal. Positive number is going up, negative is going down
-def change_pitch(signal, sr, num_semitone):
-    return librosa.return.pitch_shift(singal, sr, num_semitone)
-
-"""
-
 
 """
 this is the main function where the entire program starts
