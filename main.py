@@ -226,6 +226,11 @@ def run_alexa(command):
 
     #work on the day
     #fact of the day
+
+    elif 'fact' in command:
+        fact = give_fun_fact()
+        print(fact)
+        talk(fact)
     #this day in history
 
 
@@ -273,6 +278,21 @@ def random_quote(quoteList, AuthorList):
     length = len(quoteList)
     num = random.randrange(length - 1)
     return quoteList[num] + " by " + AuthorList[num]
+
+# support function that provides a random useless fun fact
+
+def give_fun_fact():
+
+    url = "https://uselessfacts.jsph.pl/random.json?language=en"
+
+    response = requests.request("GET", url)
+
+    data = json.loads(response.text)
+
+    fact = data['text']
+
+    return fact
+
 
 # supports the condition that returns the weather
 def scrape_weather(city):
