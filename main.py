@@ -23,16 +23,16 @@ import time
 import requests
 #import wolframalpha
 #import ecapture as ec
-from requests_futures.sessions import FuturesSession
+#from requests_futures.sessions import FuturesSession
 import json
 import re
 from pprint import pprint
-from HTMLParser import HTMLParser
+#from HTMLParser import HTMLParser
 import re
 import sys
 import numpy as np
 import soundfile as sf
-import librosa
+#import librosa
 
 #import for quotes
 from bs4 import BeautifulSoup
@@ -231,6 +231,7 @@ def run_alexa(command):
         fact = give_fun_fact()
         print(fact)
         talk(fact)
+
     #this day in history
 
 
