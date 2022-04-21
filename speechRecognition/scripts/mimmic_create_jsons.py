@@ -5,6 +5,8 @@ import argparse
 import json
 import random
 
+import args as args
+
 
 def main(args):
     data = []

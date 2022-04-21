@@ -3,7 +3,7 @@ import torchaudio
 import torch.nn as nn
 import pandas as pd
 import numpy as np
-from utils import TextProcess
+import utils
 
 
 # NOTE: add time stretch
@@ -71,7 +71,7 @@ def get_featurizer(sample_rate, n_feats=81):
 
 class Data(torch.utils.data.Dataset):
 
-    # this makes it easier to be ovveride in argparse
+    # this makes it easier to be overide in argparse
     parameters = {
         "sample_rate": 8000, "n_feats": 81,
         "specaug_rate": 0.5, "specaug_policy": 3,
