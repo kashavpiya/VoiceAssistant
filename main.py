@@ -23,16 +23,16 @@ import time
 import requests
 #import wolframalpha
 #import ecapture as ec
-from requests_futures.sessions import FuturesSession
+#from requests_futures.sessions import FuturesSession
 import json
 import re
 from pprint import pprint
-from HTMLParser import HTMLParser
+#from HTMLParser import HTMLParser
 import re
 import sys
 import numpy as np
 import soundfile as sf
-import librosa
+#import librosa
 
 #import for quotes
 from bs4 import BeautifulSoup
@@ -226,6 +226,12 @@ def run_alexa(command):
 
     #work on the day
     #fact of the day
+
+    elif 'fact' in command:
+        fact = give_fun_fact()
+        print(fact)
+        talk(fact)
+
     #this day in history
 
 
@@ -273,6 +279,21 @@ def random_quote(quoteList, AuthorList):
     length = len(quoteList)
     num = random.randrange(length - 1)
     return quoteList[num] + " by " + AuthorList[num]
+
+# support function that provides a random useless fun fact
+
+def give_fun_fact():
+
+    url = "https://uselessfacts.jsph.pl/random.json?language=en"
+
+    response = requests.request("GET", url)
+
+    data = json.loads(response.text)
+
+    fact = data['text']
+
+    return fact
+
 
 # supports the condition that returns the weather
 def scrape_weather(city):
