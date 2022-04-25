@@ -20,15 +20,15 @@ class Listener:
         self.record_seconds = record_seconds
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(format=pyaudio.paInt16,
-                        channels=1,
-                        rate=self.sample_rate,
-                        input=True,
-                        output=True,
-                        frames_per_buffer=self.chunk)
+                                  channels=1,
+                                  rate=self.sample_rate,
+                                  input=True,
+                                  output=True,
+                                  frames_per_buffer=self.chunk)
 
     def listen(self, queue):
         while True:
-            data = self.stream.read(self.chunk , exception_on_overflow=False)
+            data = self.stream.read(self.chunk, exception_on_overflow=False)
             queue.append(data)
             time.sleep(0.01)
 
@@ -43,13 +43,13 @@ class SpeechRecognitionEngine:
     def __init__(self, model_file, ken_lm_file, context_length=10):
         self.listener = Listener(sample_rate=8000)
         self.model = torch.jit.load(model_file)
-        self.model.eval().to('cpu')  #run on cpu
+        self.model.eval().to('cpu')  # run on cpu
         self.featurizer = get_featurizer(8000)
         self.audio_q = list()
         self.hidden = (torch.zeros(1, 1, 1024), torch.zeros(1, 1, 1024))
         self.beam_results = ""
         self.out_args = None
-        self.context_length = context_length * 50 # multiply by 50 because each 50 from output frame is 1 second
+        self.context_length = context_length * 50  # multiply by 50 because each 50 from output frame is 1 second
         self.start = False
 
     def save(self, waveforms, fname="audio_temp"):
@@ -94,7 +94,7 @@ class SpeechRecognitionEngine:
     def run(self, action):
         self.listener.run(self.audio_q)
         thread = threading.Thread(target=self.inference_loop,
-                                    args=(action,), daemon=True)
+                                  args=(action,), daemon=True)
         thread.start()
 
 
@@ -112,11 +112,12 @@ class DemoAction:
         if current_context_length > 10:
             self.asr_results = trascript
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="demoing the speech recognition engine in terminal.")
-    parser.add_argument('--model_file', type=str, default=None, required=True,
+    parser.add_argument('--model_file', type=str, default="A:\VoiceAssistant\model", required=True,
                         help='optimized file to load. use optimize_graph.py')
-    parser.add_argument('--ken_lm_file', type=str, default=None, required=False,
+    parser.add_argument('--ken_lm_file', type=str, default="A:\VoiceAssistant\kenlm", required=False,
                         help='If you have an ngram lm use to decode')
 
     args = parser.parse_args()
