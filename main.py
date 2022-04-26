@@ -240,7 +240,7 @@ def run_alexa(command):
         talk(fact)
 
     #this day in history
-    elif 'today' in command:
+    elif 'today' or 'this day' in command:
         MONTHS = {1: ('January', 31),
                   2: ('February', 29),
                   3: ('March', 31),
