@@ -274,8 +274,8 @@ def run_alexa(command):
         dateList = find(search_param, args.occurrence)
 
         temp = random.choice(dateList)
-        print(temp)
-        talk(remp)
+        print("One of the many things things today is known for is " + temp)
+        talk("One of the many things things today is known for is " + temp)
 
 
 
