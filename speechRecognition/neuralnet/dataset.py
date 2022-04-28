@@ -3,7 +3,68 @@ import torchaudio
 import torch.nn as nn
 import pandas as pd
 import numpy as np
-import utils
+
+
+class TextProcess:
+    def __init__(self):
+        char_map_str = """
+		' 0
+		<SPACE> 1
+		a 2
+		b 3
+		c 4
+		d 5
+		e 6
+		f 7
+		g 8
+		h 9
+		i 10
+		j 11
+		k 12
+		l 13
+		m 14
+		n 15
+		o 16
+		p 17
+		q 18
+		r 19
+		s 20
+		t 21
+		u 22
+		v 23
+		w 24
+		x 25
+		y 26
+		z 27
+		"""
+        self.char_map = {}
+        self.index_map = {}
+        for line in char_map_str.strip().split('\n'):
+            ch, index = line.split()
+            self.char_map[ch] = int(index)
+            self.index_map[int(index)] = ch
+        self.index_map[1] = ' '
+
+    def text_to_int_sequence(self, text):
+        """ Use a character map and convert text to an integer sequence """
+        int_sequence = []
+        for c in text:
+            if c == ' ':
+                ch = self.char_map['<SPACE>']
+            else:
+                ch = self.char_map[c]
+            int_sequence.append(ch)
+        return int_sequence
+
+    def int_to_text_sequence(self, labels):
+        """ Use a character map and convert integer labels to an text sequence """
+        string = []
+        for i in labels:
+            string.append(self.index_map[i])
+        return ''.join(string).replace('<SPACE>', ' ')
+
+
+textprocess = TextProcess()
 
 
 # NOTE: add time stretch
@@ -26,7 +87,7 @@ class SpecAugment(nn.Module):
             torchaudio.transforms.TimeMasking(time_mask_param=time_mask)
         )
 
-        policies = { 1: self.policy1, 2: self.policy2, 3: self.policy3 }
+        policies = {1: self.policy1, 2: self.policy2, 3: self.policy3}
         self._forward = policies[policy]
 
     def forward(self, x):
@@ -35,13 +96,13 @@ class SpecAugment(nn.Module):
     def policy1(self, x):
         probability = torch.rand(1, 1).item()
         if self.rate > probability:
-            return  self.specaug(x)
+            return self.specaug(x)
         return x
 
     def policy2(self, x):
         probability = torch.rand(1, 1).item()
         if self.rate > probability:
-            return  self.specaug2(x)
+            return self.specaug2(x)
         return x
 
     def policy3(self, x):
@@ -56,8 +117,8 @@ class LogMelSpec(nn.Module):
     def __init__(self, sample_rate=8000, n_mels=128, win_length=160, hop_length=80):
         super(LogMelSpec, self).__init__()
         self.transform = torchaudio.transforms.MelSpectrogram(
-                            sample_rate=sample_rate, n_mels=n_mels,
-                            win_length=win_length, hop_length=hop_length)
+            sample_rate=sample_rate, n_mels=n_mels,
+            win_length=win_length, hop_length=hop_length)
 
     def forward(self, x):
         x = self.transform(x)  # mel spectrogram
@@ -66,11 +127,10 @@ class LogMelSpec(nn.Module):
 
 
 def get_featurizer(sample_rate, n_feats=81):
-    return LogMelSpec(sample_rate=sample_rate, n_mels=n_feats,  win_length=160, hop_length=80)
+    return LogMelSpec(sample_rate=sample_rate, n_mels=n_feats, win_length=160, hop_length=80)
 
 
 class Data(torch.utils.data.Dataset):
-
     # this makes it easier to be overide in argparse
     parameters = {
         "sample_rate": 8000, "n_feats": 81,
@@ -79,7 +139,7 @@ class Data(torch.utils.data.Dataset):
     }
 
     def __init__(self, json_path, sample_rate, n_feats, specaug_rate, specaug_policy,
-                time_mask, freq_mask, valid=False, shuffle=True, text_to_int=True, log_ex=True):
+                 time_mask, freq_mask, valid=False, shuffle=True, text_to_int=True, log_ex=True):
         self.log_ex = log_ex
         self.text_process = TextProcess()
 
@@ -88,14 +148,13 @@ class Data(torch.utils.data.Dataset):
 
         if valid:
             self.audio_transforms = torch.nn.Sequential(
-                LogMelSpec(sample_rate=sample_rate, n_mels=n_feats,  win_length=160, hop_length=80)
+                LogMelSpec(sample_rate=sample_rate, n_mels=n_feats, win_length=160, hop_length=80)
             )
         else:
             self.audio_transforms = torch.nn.Sequential(
-                LogMelSpec(sample_rate=sample_rate, n_mels=n_feats,  win_length=160, hop_length=80),
+                LogMelSpec(sample_rate=sample_rate, n_mels=n_feats, win_length=160, hop_length=80),
                 SpecAugment(specaug_rate, specaug_policy, freq_mask, time_mask)
             )
-
 
     def __len__(self):
         return len(self.data)
@@ -108,17 +167,17 @@ class Data(torch.utils.data.Dataset):
             file_path = self.data.key.iloc[idx]
             waveform, _ = torchaudio.load(file_path)
             label = self.text_process.text_to_int_sequence(self.data['text'].iloc[idx])
-            spectrogram = self.audio_transforms(waveform) # (channel, feature, time)
+            spectrogram = self.audio_transforms(waveform)  # (channel, feature, time)
             spec_len = spectrogram.shape[-1] // 2
             label_len = len(label)
             if spec_len < label_len:
                 raise Exception('spectrogram len is bigger then label len')
             if spectrogram.shape[0] > 1:
-                raise Exception('dual channel, skipping audio file %s'%file_path)
+                raise Exception('dual channel, skipping audio file %s' % file_path)
             if spectrogram.shape[2] > 1650:
-                raise Exception('spectrogram to big. size %s'%spectrogram.shape[2])
+                raise Exception('spectrogram to big. size %s' % spectrogram.shape[2])
             if label_len == 0:
-                raise Exception('label len is zero... skipping %s'%file_path)
+                raise Exception('label len is zero... skipping %s' % file_path)
         except Exception as e:
             if self.log_ex:
                 print(str(e), file_path)
@@ -143,7 +202,7 @@ def collate_fn_padd(data):
     for (spectrogram, label, input_length, label_length) in data:
         if spectrogram is None:
             continue
-       # print(spectrogram.shape)
+        # print(spectrogram.shape)
         spectrograms.append(spectrogram.squeeze(0).transpose(0, 1))
         labels.append(torch.Tensor(label))
         input_lengths.append(input_length)

@@ -126,4 +126,3 @@ if __name__ == "__main__":
 
     asr_engine.run(action)
     threading.Event().wait()
-    # activate speech recognition engine

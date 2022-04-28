@@ -2,9 +2,7 @@
 this program is the main part of our Voice Assistant, while the program is running, our Voice Assistant is listening to the
 voice commands that we give, its functionality is limited to the functions that we have created for it to perform
 there is always room for adding new and more interactive features for the program
-"""
 
-"""
 Contributions:
 Estephanos - Weather Scrapping, Where is, and Meaning of words functionality
 Srijal - Working on changing pitch of the voice, Quote of the day
@@ -21,45 +19,26 @@ import wikipedia
 import pyjokes
 import time
 import requests
-#import wolframalpha
-#import ecapture as ec
-from requests_futures.sessions import FuturesSession
 import json
 import re
-from pprint import pprint
-from HTMLParser import HTMLParser
-import re
-import sys
-import numpy as np
-import soundfile as sf
-import librosa
-
-#import for quotes
 from bs4 import BeautifulSoup
-import pandas as pd
-#import requests
 import random
-
-#import for this day in history
-import argparse
-from bs4 import BeautifulSoup
-
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id) #id 1 represents female voice, id 0 represents male voice
-
+engine.setProperty('voice', voices[1].id)  # id 1 represents female voice, id 0 represents male voice
 
 """
 this function is used for the voice assistant to talk
 it uses text to speech to work properly
 does not return anything
 """
+
+
 def talk(text):
     engine.say(text)
     engine.runAndWait()
-
 
 
 """
@@ -69,6 +48,8 @@ replaces the wakeword with a blank space
 if the wake word is detected in the command, the string with the command is return,
 else none is returned 
 """
+
+
 def take_command():
     try:
         with sr.Microphone() as source:
@@ -94,8 +75,9 @@ def take_command():
 this function is the conditional function of the virtual assistant where all the conditions
 for each command is provided.
 """
-def run_alexa(command):
 
+
+def run_alexa(command):
     print(command)
 
     # plays any song or video on youtube
@@ -104,18 +86,15 @@ def run_alexa(command):
         talk('playing' + song)
         pywhatkit.playonyt(song)
 
-
     # ask alexa about itself
     elif 'who are you' in command:
         talk("I am Alexa, your personal voice assistant or something like that, I don't really know yet.")
-
 
     # ask about time
     elif 'time' in command:
         timer = datetime.datetime.now().strftime('%I:%M %p')
         print(timer)
         talk("The current time is" + timer)
-
 
     # ask who a person or a name is
     elif 'who is' in command:
@@ -125,23 +104,20 @@ def run_alexa(command):
         print(info)
         talk(info)
 
-
     # open wikipedia
     elif 'open wikipedia' in command:
         webbrowser.open_new_tab("https://en.wikipedia.org/wiki/Main_Page")
         talk("Opening Wikipedia")
         time.sleep(5)
 
-
     # open wikipedia to search any info
     elif 'wikipedia' in command:
         talk('Searching wikipedia...')
-        command = command.replace("wikipedia","")
+        command = command.replace("wikipedia", "")
         info = wikipedia.summary(command, sentences=2)
         talk("According to Wikipedia,")
         print(info)
         talk(info)
-
 
     # alexa tells you a joke
     elif 'joke' in command:
@@ -149,13 +125,11 @@ def run_alexa(command):
         print(joke)
         talk(joke)
 
-
     # opens youtube
     elif 'open youtube' in command:
         webbrowser.open_new_tab("https://www.youtube.com")
         talk("Opening YouTube")
         time.sleep(5)
-
 
     # opens your gmail if logged in
     elif 'open gmail' in command:
@@ -163,20 +137,17 @@ def run_alexa(command):
         talk("Opening Gmail")
         time.sleep(5)
 
-
     # opens google search page
     elif 'open google' in command:
         webbrowser.open_new_tab("https://www.google.com")
         talk("Opening Google")
         time.sleep(5)
 
-
     # opens google calendar if logged in
     elif 'open calendar' in command:
         webbrowser.open_new_tab("https://calendar.google.com")
         talk("Opening your calendar")
         time.sleep(5)
-
 
     # tells you where a place is
     elif 'where is' in command:
@@ -192,7 +163,6 @@ def run_alexa(command):
         link = f'https://www.google.co.in/maps/place/{link}'
         print(link)
         webbrowser.open(link)
-
 
     # tells you the meaning of a word
     elif 'meaning' in command:
@@ -215,8 +185,6 @@ def run_alexa(command):
         else:
             talk('Failed to get response...')
 
-
-
     # tells you what the weather is in your location
     elif 'weather' in command:
         print('..')
@@ -224,60 +192,15 @@ def run_alexa(command):
         print(words[-1])
         scrape_weather(words[-1])
 
-
     # tells alexa to stop talking, alexa shuts down
     elif 'stop' in command:
         return
 
-    #work on the day
-
-
-    #fact of the day
-
+    # tells you the fact of the day
     elif 'fact' in command:
         fact = give_fun_fact()
         print(fact)
         talk(fact)
-
-    #this day in history
-    elif 'today' or 'this day' in command:
-        MONTHS = {1: ('January', 31),
-                  2: ('February', 29),
-                  3: ('March', 31),
-                  4: ('April', 30),
-                  5: ('May', 31),
-                  6: ('June', 30),
-                  7: ('July', 31),
-                  8: ('August', 31),
-                  9: ('September', 30),
-                  10: ('October', 31),
-                  11: ('November', 30),
-                  12: ('December', 31)}
-
-        parser = argparse.ArgumentParser(prog='What Happened On This Day',
-                                         description='Find out what happened on a particular day in history')
-        parser.add_argument('occurrence', nargs='?', default='Holidays_and_observances', type=str,
-                            choices=['Events', 'Births', 'Deaths',
-                                     'Holidays_and_observances'],
-                            help='Name of the occurrence')
-        parser.add_argument('-m', '--month', type=int,
-                            default=datetime.date.today().month, choices=range(1, 13), help='Month to be looked')
-        parser.add_argument('-d', '--day', type=int,
-                            default=datetime.date.today().day, help='Day to be looked')
-        args = parser.parse_args()
-        month_day_tuple = MONTHS[args.month]
-        if not 1 <= args.day <= month_day_tuple[1]:
-            parser.error(
-                f"argument -d/--day: invalid choice: {args.day} (choose from {', '.join(map(repr, range(1, month_day_tuple[1] + 1)))})")
-        else:
-            search_param = f'{month_day_tuple[0]}_{args.day}'
-        dateList = find(search_param, args.occurrence)
-
-        temp = random.choice(dateList)
-        print("One of the many things things today is known for is " + temp)
-        talk("One of the many things things today is known for is " + temp)
-
-
 
     # gives you a quote
     elif 'quote' in command:
@@ -290,11 +213,11 @@ def run_alexa(command):
 """
 Supporting function for the conditions above
 """
+
+
 # support function for quote to parse quotes from goodreads.com
-
 def scrape_website(page_number):
-
-    #list for the author and quotes
+    # list for the author and quotes
     authors = []
     quotes = []
 
@@ -307,9 +230,9 @@ def scrape_website(page_number):
     soup = BeautifulSoup(webpage.text, "html.parser")
     quoteText = soup.find_all('div', attrs={'class': 'quoteText'})
 
-
     for i in quoteText:
-        quote = i.text.strip().split('\n')[0]  # Get the text of the current quote, but only the sentence before a new line
+        quote = i.text.strip().split('\n')[
+            0]  # Get the text of the current quote, but only the sentence before a new line
         author = i.find('span', attrs={'class': 'authorOrTitle'}).text.strip()
 
         quotes.append(quote)
@@ -317,44 +240,37 @@ def scrape_website(page_number):
 
     return authors, quotes
 
+
 # support function to give a random quote from list
+def show_definitions(soup):
+    print()
+    senseList = []
+    senses = soup.find_all('li', class_='sense')
+    for s in senses:
+        definition = s.find('span', class_='def').text
+        talk(definition)
+        time.sleep(5)
+
 
 def random_quote(quoteList, AuthorList):
     length = len(quoteList)
     num = random.randrange(length - 1)
     return quoteList[num] + " by " + AuthorList[num]
 
+
 # support function that provides a random useless fun fact
-
 def give_fun_fact():
-
     url = "https://uselessfacts.jsph.pl/random.json?language=en"
-
     response = requests.request("GET", url)
-
     data = json.loads(response.text)
-
     fact = data['text']
-
     return fact
 
-# support function for this day in history
-
-def find(search_param, occurrence):
-    response = requests.get(f'https://en.wikipedia.org/wiki/{search_param}')
-    soup = BeautifulSoup(response.text, 'html.parser')
-    heading = soup.find(id=occurrence)
-    data_list = heading.find_next('ul')
-    factList = []
-    for data in data_list.find_all('li'):
-        factList.append(data.text)
-    return factList
 
 # supports the condition that returns the weather
 def scrape_weather(city):
     url = 'https://www.google.com/search?q=accuweather+' + city
     page = requests.get(url)
-
 
     soup = BeautifulSoup(page.text, 'lxml')
     links = [a['href'] for a in soup.findAll('a')]
@@ -396,6 +312,7 @@ def scrape_weather(city):
     talk('For more information visit accuweather.com')
     time.sleep(5)
 
+
 """
 this is the main function where the entire program starts
 """
@@ -412,5 +329,3 @@ if __name__ == '__main__':
         else:
             run_alexa(statement)
         time.sleep(2)
-
-
