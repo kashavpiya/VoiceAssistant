@@ -5,14 +5,14 @@ there is always room for adding new and more interactive features for the progra
 
 Contributions:
 Estephanos - Weather Scrapping, Where is, and Meaning of words functionality
-Srijal - Working on changing pitch of the voice, Quote of the day
+Srijal - Working on changing pitch of the voice, Quote of the day, Fact, This day in History
 Kashav - Building the Voice Assistant, and remaining functionalities
 """
 
 import webbrowser
 import speech_recognition as sr
 import pyttsx3
-import pyaudio
+#import pyaudio
 import pywhatkit
 import datetime
 import wikipedia
@@ -21,8 +21,9 @@ import time
 import requests
 import json
 import re
-from bs4 import BeautifulSoup
 import random
+import argparse
+from bs4 import BeautifulSoup
 
 listener = sr.Recognizer()
 engine = pyttsx3.init()
@@ -62,7 +63,6 @@ def take_command():
                 print(command)
             else:
                 return "None"
-
 
     except Exception as e:
         talk("Pardon me, please say that again")
@@ -209,6 +209,58 @@ def run_alexa(command):
         print(text)
         talk(text)
 
+    # this day in history
+    elif 'today' or 'this day' in command:
+        MONTHS = {1: ('January', 31),
+                  2: ('February', 29),
+                  3: ('March', 31),
+                  4: ('April', 30),
+                  5: ('May', 31),
+                  6: ('June', 30),
+                  7: ('July', 31),
+                  8: ('August', 31),
+                  9: ('September', 30),
+                  10: ('October', 31),
+                  11: ('November', 30),
+                  12: ('December', 31)}
+        parser = argparse.ArgumentParser(prog='What Happened On This Day',
+                                         description='Find out what happened on a particular day in history')
+        parser.add_argument('occurrence', nargs='?', default='Holidays_and_observances', type=str,
+                            choices=['Events', 'Births', 'Deaths',
+                                     'Holidays_and_observances'],
+                            help='Name of the occurrence')
+        parser.add_argument('-m', '--month', type=int,
+                            default=datetime.date.today().month, choices=range(1, 13), help='Month to be looked')
+        parser.add_argument('-d', '--day', type=int,
+                            default=datetime.date.today().day, help='Day to be looked')
+        args = parser.parse_args()
+        month_day_tuple = MONTHS[args.month]
+        if not 1 <= args.day <= month_day_tuple[1]:
+            parser.error(
+                f"argument -d/--day: invalid choice: {args.day} (choose from {', '.join(map(repr, range(1, month_day_tuple[1] + 1)))})")
+        else:
+            search_param = f'{month_day_tuple[0]}_{args.day}'
+        dateList = find(search_param, args.occurrence)
+
+        temp = random.choice(dateList)
+        print("One of the many things things today is known for is " + temp)
+        talk("One of the many things things today is known for is " + temp)
+
+    elif 'change code' or 'change lock' in command:
+        file.write("true")
+        talk("please give a code")
+        order = take_command().lower()
+        codeList = order.split()
+        if checkCode(codeList):
+            file.write(order)
+        else:
+            while checkCode(codeList) is False:
+                talk("invalid code, please state code again")
+                order = take_command().lower()
+                codeList = order.split()
+            file.write(order)
+        print(order)
+
 
 """
 Supporting function for the conditions above
@@ -312,20 +364,84 @@ def scrape_weather(city):
     talk('For more information visit accuweather.com')
     time.sleep(5)
 
+# support function for this day in history
+
+def find(search_param, occurrence):
+    response = requests.get(f'https://en.wikipedia.org/wiki/{search_param}')
+    soup = BeautifulSoup(response.text, 'html.parser')
+    heading = soup.find(id=occurrence)
+    data_list = heading.find_next('ul')
+    factList = []
+    for data in data_list.find_all('li'):
+        factList.append(data.text)
+    return factList
+
+# support function to change pass code
+def checkCode(codeList):
+
+    check = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+    for word in codeList:
+        if word not in check:
+            return False
+    return True
 
 """
 this is the main function where the entire program starts
 """
 if __name__ == '__main__':
-    talk("Greetings, I am your personal voice assistant.")
-    while True:
-        talk("Tell me how can I help you?")
+    file = open('passcode.txt', 'r+')
+    file_content = file.readlines()
+    status = file_content[0]
+    code = file_content[1]
+
+    if status == "true":
+        talk("Greeting, Please tell me the passcode.")
         statement = take_command().lower()
-        if statement == 0:
-            continue
-        elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
-            talk("Personal Voice Assistant Shutting Down")
-            exit()
+        if statement == code:
+            talk("Greetings, I am your personal voice assistant.")
+            while True:
+                talk("Tell me how can I help you?")
+                statement = take_command().lower()
+                if statement == 0:
+                    continue
+                elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
+                    talk("Personal Voice Assistant Shutting Down")
+                    file.close()
+                    exit()
+                else:
+                    run_alexa(statement)
+                time.sleep(2)
         else:
-            run_alexa(statement)
-        time.sleep(2)
+            while statement != code:
+                talk("Greeting, Please tell me the passcode.")
+                statement = take_command().lower()
+            talk("Greeting, Please tell me the passcode.")
+            statement = take_command().lower()
+            if statement == code:
+                talk("Greetings, I am your personal voice assistant.")
+                while True:
+                    talk("Tell me how can I help you?")
+                    statement = take_command().lower()
+                    if statement == 0:
+                        continue
+                    elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
+                        talk("Personal Voice Assistant Shutting Down")
+                        file.close()
+                        exit()
+                    else:
+                        run_alexa(statement)
+                    time.sleep(2)
+    else:
+        talk("Greetings, I am your personal voice assistant.")
+        while True:
+            talk("Tell me how can I help you?")
+            statement = take_command().lower()
+            if statement == 0:
+                continue
+            elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
+                talk("Personal Voice Assistant Shutting Down")
+                file.close()
+                exit()
+            else:
+                run_alexa(statement)
+            time.sleep(2)
