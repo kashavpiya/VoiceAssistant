@@ -12,7 +12,7 @@ Kashav - Building the Voice Assistant, and remaining functionalities
 import webbrowser
 import speech_recognition as sr
 import pyttsx3
-#import pyaudio
+import pyaudio
 import pywhatkit
 import datetime
 import wikipedia
@@ -389,59 +389,15 @@ def checkCode(codeList):
 this is the main function where the entire program starts
 """
 if __name__ == '__main__':
-    file = open('passcode.txt', 'r+')
-    file_content = file.readlines()
-    status = file_content[0]
-    code = file_content[1]
-
-    if status == "true":
-        talk("Greeting, Please tell me the passcode.")
+    talk("Greetings, I am your personal voice assistant.")
+    while True:
+        talk("Tell me how can I help you?")
         statement = take_command().lower()
-        if statement == code:
-            talk("Greetings, I am your personal voice assistant.")
-            while True:
-                talk("Tell me how can I help you?")
-                statement = take_command().lower()
-                if statement == 0:
-                    continue
-                elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
-                    talk("Personal Voice Assistant Shutting Down")
-                    file.close()
-                    exit()
-                else:
-                    run_alexa(statement)
-                time.sleep(2)
+        if statement == 0:
+            continue
+        elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
+            talk("Personal Voice Assistant Shutting Down")
+            exit()
         else:
-            while statement != code:
-                talk("Greeting, Please tell me the passcode.")
-                statement = take_command().lower()
-            talk("Greeting, Please tell me the passcode.")
-            statement = take_command().lower()
-            if statement == code:
-                talk("Greetings, I am your personal voice assistant.")
-                while True:
-                    talk("Tell me how can I help you?")
-                    statement = take_command().lower()
-                    if statement == 0:
-                        continue
-                    elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
-                        talk("Personal Voice Assistant Shutting Down")
-                        file.close()
-                        exit()
-                    else:
-                        run_alexa(statement)
-                    time.sleep(2)
-    else:
-        talk("Greetings, I am your personal voice assistant.")
-        while True:
-            talk("Tell me how can I help you?")
-            statement = take_command().lower()
-            if statement == 0:
-                continue
-            elif 'stop' in statement or 'bye' in statement or 'exit' in statement:
-                talk("Personal Voice Assistant Shutting Down")
-                file.close()
-                exit()
-            else:
-                run_alexa(statement)
-            time.sleep(2)
+            run_alexa(statement)
+        time.sleep(2)

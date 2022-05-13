@@ -1,3 +1,4 @@
+import sounddevice as sd
 import pyaudio
 import threading
 import time
