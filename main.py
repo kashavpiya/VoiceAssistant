@@ -58,10 +58,11 @@ def take_command():
             voice = listener.listen(source)
             command = listener.recognize_google(voice)
             command = command.lower()
-            if 'alexa' in command:
-                command = command.replace('alexa', '')
+            if 'summer' in command:
+                command = command.replace('summer', '')
                 print(command)
             else:
+                talk("Pardon me, please say that again")
                 return "None"
 
     except Exception as e:
@@ -77,7 +78,7 @@ for each command is provided.
 """
 
 
-def run_alexa(command):
+def run_summer(command):
     print(command)
 
     # plays any song or video on youtube
@@ -86,9 +87,9 @@ def run_alexa(command):
         talk('playing' + song)
         pywhatkit.playonyt(song)
 
-    # ask alexa about itself
+    # ask summer about itself
     elif 'who are you' in command:
-        talk("I am Alexa, your personal voice assistant or something like that, I don't really know yet.")
+        talk("I am Summer, your personal voice assistant or something like that, I don't really know yet.")
 
     # ask about time
     elif 'time' in command:
@@ -119,7 +120,7 @@ def run_alexa(command):
         print(info)
         talk(info)
 
-    # alexa tells you a joke
+    # summer tells you a joke
     elif 'joke' in command:
         joke = pyjokes.get_joke()
         print(joke)
@@ -192,9 +193,6 @@ def run_alexa(command):
         print(words[-1])
         scrape_weather(words[-1])
 
-    # tells alexa to stop talking, alexa shuts down
-    elif 'stop' in command:
-        return
 
     # tells you the fact of the day
     elif 'fact' in command:
@@ -210,7 +208,7 @@ def run_alexa(command):
         talk(text)
 
     # this day in history
-    elif 'today' or 'this day' in command:
+    elif 'today' in command or 'this day' in command:
         MONTHS = {1: ('January', 31),
                   2: ('February', 29),
                   3: ('March', 31),
@@ -246,6 +244,11 @@ def run_alexa(command):
         print("One of the many things things today is known for is " + temp)
         talk("One of the many things things today is known for is " + temp)
 
+    # tells summer to stop talking, summer shuts down
+    elif 'stop' in command or 'exit' in command or 'bye' in command:
+        return
+
+"""
     elif 'change code' or 'change lock' in command:
         file.write("true")
         talk("please give a code")
@@ -260,7 +263,7 @@ def run_alexa(command):
                 codeList = order.split()
             file.write(order)
         print(order)
-
+"""
 
 """
 Supporting function for the conditions above
@@ -298,11 +301,15 @@ def show_definitions(soup):
     print()
     senseList = []
     senses = soup.find_all('li', class_='sense')
+    num = 0
     for s in senses:
+        if num == 1:
+            pass
         definition = s.find('span', class_='def').text
         talk(definition)
         time.sleep(5)
-
+        num = 1
+    num = 0
 
 def random_quote(quoteList, AuthorList):
     length = len(quoteList)
@@ -377,6 +384,7 @@ def find(search_param, occurrence):
     return factList
 
 # support function to change pass code
+"""
 def checkCode(codeList):
 
     check = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
@@ -384,7 +392,7 @@ def checkCode(codeList):
         if word not in check:
             return False
     return True
-
+"""
 """
 this is the main function where the entire program starts
 """
@@ -399,5 +407,5 @@ if __name__ == '__main__':
             talk("Personal Voice Assistant Shutting Down")
             exit()
         else:
-            run_alexa(statement)
+            run_summer(statement)
         time.sleep(2)
