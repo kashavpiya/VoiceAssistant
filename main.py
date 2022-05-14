@@ -8,10 +8,13 @@ Estephanos - Weather Scrapping, Where is, and Meaning of words functionality
 Srijal - Working on changing pitch of the voice, Quote of the day, Fact, This day in History
 Kashav - Building the Voice Assistant, and remaining functionalities
 """
+from email import message
 from tkinter import *
-from tkinter import messagebox
-import pyowm
+from tokenize import String
+from PIL import ImageTk, Image
+#import pyowm
 import webbrowser
+from pyparsing import col
 import speech_recognition as sr
 import pyttsx3
 import pyaudio
@@ -31,9 +34,29 @@ class Window(Frame):
     def __init__(self, master):
         self.master = master
         master.title("Summer")
+
         A = Label(master, text="Hi! I am Summer, your voice assistant")
-        A.pack(side="top")
-        Button(master, text="Listen", width=100, relief="groove", command=self.Processo_r).pack(side="bottom")
+        A.grid(row=0, column = 1, columnspan=2)
+
+        clicked = StringVar()
+        clicked.set("Functions:")
+        dropList = ["Tell time","Tell Date", "Play Music", "Introduction", "Search Person", "Play Youtube", "Search wiki", "This day info", "Say Fact, Quote, or Joke", "Locate", "Find meaning", "Functions:"]
+        drop = OptionMenu(master, clicked, *dropList)
+        drop.grid(row = 0, column = 0)
+
+        myImg = ImageTk.PhotoImage(Image.open("valorant-collectible-make-em-dance-spray.png"))
+        imglabel = Label(master, image = myImg)
+        imglabel.grid(row=2, column = 1)
+
+        listenButton = Button(master, text = "Listen!", width = 25, command = self.Processo_r, fg="yellow", bg="#000000")
+        listenButton.grid(row = 3, column = 1)
+
+        button_quit = Button(master, text= "Exit", command=root.quit)
+        button_quit.grid(row = 3, column = 2)
+        
+        myLabel2 = Label(master, text = "Logs:")
+        myLabel2.grid(row = 4, column = 0)
+              
 
     """
     this function is used for the voice assistant to talk
@@ -121,7 +144,6 @@ class Window(Frame):
             self.talk("it's november")
         if month == "Dec":
             self.talk("it's december")
-
 
     def playMusic(self, command):
         song = command.replace('play', '')
@@ -312,7 +334,9 @@ class Window(Frame):
 
 root=Tk()
 app=Window(root)
-root.geometry("500x80")
+root.geometry("400x600")
+root.iconbitmap("robo.ico")
+
 root.mainloop()
 
 
