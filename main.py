@@ -222,8 +222,32 @@ class Window(Frame):
         fact = give_fun_fact()
         self.talk(fact)
 
+    def scrape_website(page_num):
+    # list for the author and quotes
+        authors = []
+        quotes = []
+
+    # Convert the page numbers to a string and add page number to URL, then make a request to the website
+        page_num = 1
+        URL = 'https://www.goodreads.com/quotes/tag/inspirational?page=' + page_num
+        webpage = requests.get(URL)
+
+    # Parse the text from the website then get the tag and it's class
+        soup = BeautifulSoup(webpage.text, "html.parser")
+        quoteText = soup.find_all('div', attrs={'class': 'quoteText'})
+
+        for i in quoteText:
+            quote = i.text.strip().split('\n')[
+                0]  # Get the text of the current quote, but only the sentence before a new line
+            author = i.find('span', attrs={'class': 'authorOrTitle'}).text.strip()
+
+            quotes.append(quote)
+            authors.append(author)
+
+        return authors, quotes
+
     def quote(self):
-        authors, quotes = scrape_website(1)
+        authors, quotes = self.scrape_website(1)
         text = random_quote(quotes, authors)
         self.talk(text)
 
@@ -294,15 +318,15 @@ class Window(Frame):
 
         elif 'google' in command:
             self.openGoogle()
-            v.set("Googled something")
+            v.set("Opened google")
 
         elif 'youtube' in command:
             self.openYoutube()
-            v.set("Searched youtube")
+            v.set("Opened youtube")
 
         elif 'wikipedia' in command:
             self.openwiki()
-            v.set("Searched wiki")
+            v.set("Opened wikipedia")
 
         elif 'who is' in command:
             self.openwikiperson(command)
@@ -361,29 +385,7 @@ placeLabel.grid(row = 5, column = 0, columnspan= 2)
 
 root.mainloop()
 
-def scrape_website(page_number):
-    # list for the author and quotes
-    authors = []
-    quotes = []
 
-    # Convert the page numbers to a string and add page number to URL, then make a request to the website
-    page_num = str(page_number)
-    URL = 'https://www.goodreads.com/quotes/tag/inspirational?page=' + page_num
-    webpage = requests.get(URL)
-
-    # Parse the text from the website then get the tag and it's class
-    soup = BeautifulSoup(webpage.text, "html.parser")
-    quoteText = soup.find_all('div', attrs={'class': 'quoteText'})
-
-    for i in quoteText:
-        quote = i.text.strip().split('\n')[
-            0]  # Get the text of the current quote, but only the sentence before a new line
-        author = i.find('span', attrs={'class': 'authorOrTitle'}).text.strip()
-
-        quotes.append(quote)
-        authors.append(author)
-
-    return authors, quotes
 
 
 # support function to give a random quote from list
