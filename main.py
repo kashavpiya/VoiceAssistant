@@ -200,6 +200,25 @@ class Window(Frame):
         webbrowser.open(link)
         time.sleep(5)
 
+    ###
+
+    #function to provide meaning of a word
+
+    # support function to give a random quote from list
+    def show_definitions(self, soup):
+        #print()
+        senseList = []
+        senses = soup.find_all('li', class_='sense')
+        num = 0
+        for s in senses:
+            if num == 1:
+                pass
+            definition = s.find('span', class_='def').text
+            self.talk(definition)
+            time.sleep(5)
+            num = 1
+        num = 0
+    
     def meaning(self, command):
         words = command.split(' ')
         word = words[-1]
@@ -212,7 +231,7 @@ class Window(Frame):
 
             try:
                 # show_origin(soup)
-                show_definitions(soup)
+                self.show_definitions(soup)
             except AttributeError:
                 self.talk('Word not found!!')
         else:
@@ -221,7 +240,7 @@ class Window(Frame):
     ###
 
     # support function that provides a random useless fun fact from a website
-    
+
     def give_fun_fact(self):
         url = "https://uselessfacts.jsph.pl/random.json?language=en"
         response = requests.request("GET", url)
@@ -274,6 +293,18 @@ class Window(Frame):
 
     ###
 
+    #functions that provides a list of statements on a random event that happened on a particular day in history
+
+    def find(self, search_param, occurrence):
+        response = requests.get(f'https://en.wikipedia.org/wiki/{search_param}')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        heading = soup.find(id=occurrence)
+        data_list = heading.find_next('ul')
+        factList = []
+        for data in data_list.find_all('li'):
+            factList.append(data.text)
+        return factList
+
     def onThisDay(self):
         MONTHS = {1: ('January', 31),
                   2: ('February', 29),
@@ -298,15 +329,19 @@ class Window(Frame):
         parser.add_argument('-d', '--day', type=int,
                             default=datetime.date.today().day, help='Day to be looked')
         args = parser.parse_args()
+
         month_day_tuple = MONTHS[args.month]
+
         if not 1 <= args.day <= month_day_tuple[1]:
             parser.error(
                 f"argument -d/--day: invalid choice: {args.day} (choose from {', '.join(map(repr, range(1, month_day_tuple[1] + 1)))})")
         else:
             search_param = f'{month_day_tuple[0]}_{args.day}'
-        dateList = find(search_param, args.occurrence)
+        
+        dateList = self.find(search_param, args.occurrence)
 
         temp = random.choice(dateList)
+
         print("One of the many things things today is known for is " + temp)
         self.talk("One of the many things things today is known for is " + temp)
 
@@ -323,6 +358,7 @@ class Window(Frame):
 
         if command == "What can you do":
             self.functions()
+            v.set("Asked for help")
 
         elif 'who are you' in command:
             self.introduction()
@@ -407,34 +443,6 @@ placeLabel = Label(root, textvariable = v)
 placeLabel.grid(row = 5, column = 0, columnspan= 2)
 
 root.mainloop()
-
-
-
-
-# support function to give a random quote from list
-def show_definitions(soup):
-    print()
-    senseList = []
-    senses = soup.find_all('li', class_='sense')
-    num = 0
-    for s in senses:
-        if num == 1:
-            pass
-        definition = s.find('span', class_='def').text
-        talk(definition)
-        time.sleep(5)
-        num = 1
-    num = 0
-
-def find(search_param, occurrence):
-    response = requests.get(f'https://en.wikipedia.org/wiki/{search_param}')
-    soup = BeautifulSoup(response.text, 'html.parser')
-    heading = soup.find(id=occurrence)
-    data_list = heading.find_next('ul')
-    factList = []
-    for data in data_list.find_all('li'):
-        factList.append(data.text)
-    return factList
 
 #
 # """
