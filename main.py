@@ -54,7 +54,7 @@ class Window(Frame):
         button_quit = Button(master, text= "Exit", command=root.quit)
         button_quit.grid(row = 3, column = 2)
         
-        myLabel2 = Label(master, text = "Logs:", font= ('Helvetica 11 underline'))
+        myLabel2 = Label(master, text = "Log:", font= ('Helvetica 11 underline'))
         myLabel2.grid(row = 4, column = 0)
               
 
@@ -217,10 +217,26 @@ class Window(Frame):
                 self.talk('Word not found!!')
         else:
             self.talk('Failed to get response...')
+    
+    ###
+
+    # support function that provides a random useless fun fact from a website
+    
+    def give_fun_fact(self):
+        url = "https://uselessfacts.jsph.pl/random.json?language=en"
+        response = requests.request("GET", url)
+        data = json.loads(response.text)
+        fact = data['text']
+        return fact
 
     def fact(self):
-        fact = give_fun_fact()
+        fact = self.give_fun_fact()
         self.talk(fact)
+
+    ###
+
+    #functions to provide a quote randomly from the first page of goodreads.com using web scraping
+    #They are: random_quote, scrape_website, quote
 
     def random_quote(self, quoteList, AuthorList):
         length = len(quoteList)
@@ -255,6 +271,8 @@ class Window(Frame):
         authors, quotes = self.scrape_website(1)
         text = self.random_quote(quotes, authors)
         self.talk(text)
+
+    ###
 
     def onThisDay(self):
         MONTHS = {1: ('January', 31),
@@ -407,15 +425,6 @@ def show_definitions(soup):
         time.sleep(5)
         num = 1
     num = 0
-
-# support function that provides a random useless fun fact
-def give_fun_fact():
-    url = "https://uselessfacts.jsph.pl/random.json?language=en"
-    response = requests.request("GET", url)
-    data = json.loads(response.text)
-    fact = data['text']
-    return fact
-
 
 def find(search_param, occurrence):
     response = requests.get(f'https://en.wikipedia.org/wiki/{search_param}')
