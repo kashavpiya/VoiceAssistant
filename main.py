@@ -54,7 +54,7 @@ class Window(Frame):
         button_quit = Button(master, text= "Exit", command=root.quit)
         button_quit.grid(row = 3, column = 2)
         
-        myLabel2 = Label(master, text = "Logs:")
+        myLabel2 = Label(master, text = "Logs:", font= ('Helvetica 11 underline'))
         myLabel2.grid(row = 4, column = 0)
               
 
@@ -270,6 +270,7 @@ class Window(Frame):
     def functions(self):
         self.talk("Asking me to open youtube, wikipedia or google. I can also tell you the time, date or even say jokes. Try me!"
              "")
+
     def Processo_r(self):
         command = str(self.speech_recog())
 
@@ -281,56 +282,69 @@ class Window(Frame):
 
         elif 'what day' in command:
             self.tell_day()
+            v.set("Asked what day")
 
         elif 'what month' in command:
             self.tell_month()
+            v.set("Asked what month")
 
         elif 'time' in command:
             self.tell_time()
+            v.set("Asked what time")
 
         elif 'google' in command:
             self.openGoogle()
+            v.set("Googled something")
 
         elif 'youtube' in command:
             self.openYoutube()
+            v.set("Searched youtube")
 
         elif 'wikipedia' in command:
             self.openwiki()
+            v.set("Searched wiki")
 
         elif 'who is' in command:
             self.openwikiperson(command)
+            v.set("Searched for a person")
 
         elif 'calendar' in command:
             self.openCal()
+            v.set("Opened Googgle calendar")
 
         elif 'mean' in command:
             self.meaning(command)
+            v.set("Searched word meaning")
 
         elif 'where is' in command:
             self.where(command)
+            v.set("Searched location")
 
         elif 'joke' in command:
             self.jokes()
+            v.set("Provided a random joke")
 
         elif 'play' in command:
             self.playMusic(command)
+            v.set("Played requested music")
 
         elif 'fact' in command:
             self.fact()
+            v.set("Provided a random fact")
 
         elif 'quote' in command:
             self.quote()
+            v.set("Provided a random quote")
 
         elif 'on this day' in command:
             self.onThisDay()
+            v.set("Informed about today in history")
 
         elif 'stop' in command or 'exit' in command or 'bye' in command:
             self.shut()
 
         else:
             self.talk("I don't quite understand what you want me to do")
-
-
 
 root=Tk()
 app=Window(root)
@@ -340,8 +354,12 @@ root.iconbitmap("robo.ico")
 myImg = ImageTk.PhotoImage(Image.open("robot.jpg"))
 imgLabel = Label(root, image = myImg)
 imgLabel.grid(row=2, column = 1)
-root.mainloop()
 
+v = StringVar()
+placeLabel = Label(root, textvariable = v)
+placeLabel.grid(row = 5, column = 0, columnspan= 2)
+
+root.mainloop()
 
 def scrape_website(page_number):
     # list for the author and quotes
