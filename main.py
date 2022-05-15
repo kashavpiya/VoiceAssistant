@@ -222,17 +222,22 @@ class Window(Frame):
         fact = give_fun_fact()
         self.talk(fact)
 
-    def scrape_website(page_num):
-    # list for the author and quotes
+    def random_quote(self, quoteList, AuthorList):
+        length = len(quoteList)
+        num = random.randrange(length - 1)
+        return quoteList[num] + " by " + AuthorList[num]
+
+    def scrape_website(self, page_num):
+        # list for the author and quotes
         authors = []
         quotes = []
 
-    # Convert the page numbers to a string and add page number to URL, then make a request to the website
-        page_num = 1
+        # Convert the page numbers to a string and add page number to URL, then make a request to the website
+        page_num = str(page_num)
         URL = 'https://www.goodreads.com/quotes/tag/inspirational?page=' + page_num
         webpage = requests.get(URL)
 
-    # Parse the text from the website then get the tag and it's class
+        # Parse the text from the website then get the tag and it's class
         soup = BeautifulSoup(webpage.text, "html.parser")
         quoteText = soup.find_all('div', attrs={'class': 'quoteText'})
 
@@ -248,7 +253,7 @@ class Window(Frame):
 
     def quote(self):
         authors, quotes = self.scrape_website(1)
-        text = random_quote(quotes, authors)
+        text = self.random_quote(quotes, authors)
         self.talk(text)
 
     def onThisDay(self):
@@ -402,12 +407,6 @@ def show_definitions(soup):
         time.sleep(5)
         num = 1
     num = 0
-
-def random_quote(quoteList, AuthorList):
-    length = len(quoteList)
-    num = random.randrange(length - 1)
-    return quoteList[num] + " by " + AuthorList[num]
-
 
 # support function that provides a random useless fun fact
 def give_fun_fact():
