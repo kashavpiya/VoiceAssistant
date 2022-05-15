@@ -13,7 +13,7 @@ dropList = ["Monday","Tuesday", "Wednesday", "Functions:"]
 drop = OptionMenu(root, clicked, *dropList)
 drop. grid(row = 0, column = 0)
 
-myImg = ImageTk.PhotoImage(Image.open("valorant-collectible-make-em-dance-spray.png"))
+myImg = ImageTk.PhotoImage(Image.open("robot.jpg"))
 my_label = Label(image = myImg)
 my_label.grid(row=1, column = 1)
 

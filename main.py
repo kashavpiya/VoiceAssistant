@@ -44,9 +44,9 @@ class Window(Frame):
         drop = OptionMenu(master, clicked, *dropList)
         drop.grid(row = 0, column = 0)
 
-        myImg = ImageTk.PhotoImage(Image.open("valorant-collectible-make-em-dance-spray.png"))
-        imglabel = Label(master, image = myImg)
-        imglabel.grid(row=2, column = 1)
+        # myImg = ImageTk.PhotoImage(Image.open("robot.jpg"))
+        # imgLabel = Label(master, image = myImg)
+        # imgLabel.grid(row=2, column = 1)
 
         listenButton = Button(master, text = "Listen!", width = 25, command = self.Processo_r, fg="yellow", bg="#000000")
         listenButton.grid(row = 3, column = 1)
@@ -334,9 +334,12 @@ class Window(Frame):
 
 root=Tk()
 app=Window(root)
-root.geometry("400x600")
+root.geometry("400x400")
 root.iconbitmap("robo.ico")
 
+myImg = ImageTk.PhotoImage(Image.open("robot.jpg"))
+imgLabel = Label(root, image = myImg)
+imgLabel.grid(row=2, column = 1)
 root.mainloop()
 
 
