@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+!git clone https://github.com/AllenDowney/ThinkDSP.git 
 
 import os, sys, math
 import argparse
@@ -6,6 +6,9 @@ import numpy as np
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 from scipy import interpolate
+import sys
+sys.path.insert(0, 'ThinkDSP/code/')
+import thinkdsp
     
 def speech_vad(wav_file):
     fs, audio = wavfile.read(wav_file)
