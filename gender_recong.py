@@ -198,8 +198,9 @@ def plot_pitch(audio, vad_masks, fs, filter_bank, fft_points, F0, gender):
 
     plt.subplot(2, 1, 2)
     plt.plot(xf, filter_bank)
-    plt.axvline(x=F0,color='red')
-    plt.axvline(x=170,color='black',linestyle='dashed')
+    plt.axvline(x=F0,color='red', label='Measured Frequency')
+    plt.axvline(x=165,color='black',linestyle='dashed', label='Female min Freqency')
+    plt.legend()
     plt.xlabel('frequency (Hz)')
     plt.ylabel('magnitude')
     textstr = f'\nPitch: {str(F0)} Gender: {gender}'
