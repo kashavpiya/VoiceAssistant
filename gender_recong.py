@@ -184,31 +184,36 @@ def speech_pitch(wav_file):
 
     return (audio[0:len(vad_masks)], vad_masks, fs, filter_bank, n_fft_points, F0, gender)
 
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='speech audio file (.wav)')
-    parser.add_argument('--wavfile', required=True)
-    args = parser.parse_args()
-
-    audio, vad_masks, fs, filter_bank, fft_points, F0, gender = speech_pitch(args.wavfile)
-
+def plot_pitch(audio, vad_masks, fs, filter_bank, fft_points, F0, gender):
     # pitch estimation and gender detection
     xt = np.arange(0, len(audio), 1) / fs *1000
     xf = np.arange(0, len(filter_bank), 1) * fs / fft_points 
-    fig, axs = plt.subplots(2)
-    axs[0].plot(xt, audio, color="blue")
-    axs[0].set_xlabel('time (ms)')
-    axs[0].set_ylabel('amplitude')
-    axs[0].set_title('audio signal')
-    axs[1].plot(xf, filter_bank, color="blue")
-    axs[1].axvline(x=F0,color='red')
-    axs[1].axvline(x=170,color='black',linestyle='dashed')
-    axs[1].set_xlabel('frequency (Hz)')
-    axs[1].set_ylabel('magnitude')
-    axs[1].set_title('pitch estimation')
-    textstr ='Pitch: ' + str(F0) + ' Hz' + '\n' + 'Gender: ' + gender
-    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-    axs[1].text(0.75, 0.95, textstr, transform=axs[1].transAxes, verticalalignment='top', bbox=props)
-    fig.tight_layout(pad=1.0)    
+
+    plt.figure(figsize=(16,8))
+    plt.subplot(2, 1, 1)
+    plt.plot(xt, audio)
+    plt.xlabel('time (ms)')
+    plt.ylabel('amplitude')
+    plt.title('audio signal')
+
+    plt.subplot(2, 1, 2)
+    plt.plot(xf, filter_bank)
+    plt.axvline(x=F0,color='red')
+    plt.axvline(x=170,color='black',linestyle='dashed')
+    plt.xlabel('frequency (Hz)')
+    plt.ylabel('magnitude')
+    textstr = f'\nPitch: {str(F0)} Gender: {gender}'
+    plt.title('pitch estimation')
+
+    plt.tight_layout()
     plt.show()
+
+from google.colab import drive
+drive.mount('/content/gdrive')
+
+
+audio_file = '/content/gdrive/MyDrive/Voice Recordings/Individual Voice Recordings/VR1.wav'
+audio, vad_masks, fs, filter_bank, fft_points, F0, gender = speech_pitch(audio_file)
+print(gender)
+
+plot_pitch(audio, vad_masks, fs, filter_bank, fft_points, F0, gender)
