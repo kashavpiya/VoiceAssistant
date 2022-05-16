@@ -171,11 +171,11 @@ def speech_pitch(wav_file):
             F0 = int(i * (fs / n_fft_points))
             break
     gender = 'Unknown'
-    if 85 <= F0 < 170:     # [85, 170)
-       gender = 'Male'
-    elif 170 <= F0 < 255: # [170, 255]
+    if 165 <= F0 < 255:      # [165, 255)
        gender = 'Female'
-
+    elif 85 <= F0 < 180:     # [85, 180)
+       gender = 'Male'
+    
     return (audio[0:len(vad_masks)], vad_masks, fs, filter_bank, n_fft_points, F0, gender)
 
 def plot_pitch(audio, vad_masks, fs, filter_bank, fft_points, F0, gender):
@@ -194,6 +194,9 @@ def plot_pitch(audio, vad_masks, fs, filter_bank, fft_points, F0, gender):
     plt.plot(xf, filter_bank)
     plt.axvline(x=F0,color='red', label='Measured Frequency')
     plt.axvline(x=165,color='black',linestyle='dashed', label='Female min Freqency')
+    plt.axvline(x=255,color='black',linestyle='dashed', label='Female max Freqency')
+    plt.axvline(x=85,color='blue',linestyle='dashed', label='Male min Freqency')
+    plt.axvline(x=180,color='blue',linestyle='dashed', label='Male max Freqency')
     plt.legend()
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Magnitude')
