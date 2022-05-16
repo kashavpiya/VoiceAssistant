@@ -14,6 +14,7 @@ from tokenize import String
 from PIL import ImageTk, Image
 #import pyowm
 import webbrowser
+import os
 from pyparsing import col
 import speech_recognition as sr
 import pyttsx3
@@ -29,6 +30,10 @@ import re
 import random
 import argparse
 from bs4 import BeautifulSoup
+
+app_string = ["open word", "open powerpoint", "open excel", "open zoom", "open notepad", "open chrome"]
+app_link = [r'\Word.lnk', r'\PowerPoint.lnk', r'\Excel.lnk', r'\Zoom.lnk', r'\Notepad.lnk', r'\Google Chrome.lnk']
+app_dest = r'C:\ProgramData\Microsoft\Windows\Start Menu\Programs'
 
 class Window(Frame):
     def __init__(self, master):
@@ -425,6 +430,31 @@ class Window(Frame):
 
         elif 'stop' in command or 'exit' in command or 'bye' in command:
             self.shut()
+
+        elif app_string[0] in command:
+            os.startfile(app_dest + app_link[0])
+
+            self.talk("Microsoft office Word is opening now")
+
+        elif app_string[1] in command:
+            os.startfile(app_dest + app_link[1])
+            self.talk("Microsoft office PowerPoint is opening now")
+
+        elif app_string[2] in command:
+            os.startfile(app_dest + app_link[2])
+            self.talk("Microsoft office Excel is opening now")
+
+        elif app_string[3] in command:
+            os.startfile(app_dest + app_link[3])
+            self.talk("Zoom is opening now")
+
+        elif app_string[4] in command:
+            os.startfile(app_dest + app_link[4])
+            speak("Notepad is opening now")
+
+        elif app_string[5] in command:
+            os.startfile(app_dest + app_link[5])
+            self.talk("Google chrome is opening now")
 
         else:
             self.talk("I don't quite understand what you want me to do")
