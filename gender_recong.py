@@ -118,10 +118,6 @@ def speech_pitch(wav_file):
 
     audio, vad_masks, fs = speech_vad(wav_file)
 
-    #fs, audio = wavfile.read(wav_file)
-    #audio = audio / 2.0 ** 14 # normalize in range (-2, +2)
-    #audio = audio - np.mean(audio)
-
     frame_size_ms = 25*2
     step_size_ms = 10
     frame_size_samples = int(fs * frame_size_ms / 1000)
@@ -190,19 +186,19 @@ def plot_pitch(audio, vad_masks, fs, filter_bank, fft_points, F0, gender):
     plt.figure(figsize=(16,8))
     plt.subplot(2, 1, 1)
     plt.plot(xt, audio)
-    plt.xlabel('time (ms)')
-    plt.ylabel('amplitude')
-    plt.title('audio signal')
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Amplitude')
+    plt.title('Audio Signal')
 
     plt.subplot(2, 1, 2)
     plt.plot(xf, filter_bank)
     plt.axvline(x=F0,color='red', label='Measured Frequency')
     plt.axvline(x=165,color='black',linestyle='dashed', label='Female min Freqency')
     plt.legend()
-    plt.xlabel('frequency (Hz)')
-    plt.ylabel('magnitude')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Magnitude')
     textstr = f'\nPitch: {str(F0)} Gender: {gender}'
-    plt.title('pitch estimation')
+    plt.title('Pitch Estimation')
 
     plt.tight_layout()
     plt.show()
