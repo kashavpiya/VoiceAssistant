@@ -35,6 +35,7 @@ app_string = ["open word", "open powerpoint", "open excel", "open zoom", "open n
 app_link = [r'\Word.lnk', r'\PowerPoint.lnk', r'\Excel.lnk', r'\Zoom.lnk', r'\Notepad.lnk', r'\Google Chrome.lnk']
 app_dest = r'C:\ProgramData\Microsoft\Windows\Start Menu\Programs'
 
+#UI was created through following a codemy video about tkinter and created by ourselves
 
 class Window(Frame):
     def __init__(self, master):
@@ -210,8 +211,8 @@ class Window(Frame):
     ###
 
     # function to provide meaning of a word
+    # support function to give a random meaning from list
 
-    # support function to give a random quote from list
     def show_definitions(self, soup):
         # print()
         senseList = []
@@ -247,6 +248,8 @@ class Window(Frame):
     ###
 
     # support function that provides a random useless fun fact from a website
+    # used an api call to hold data in a list
+    # api from: https://uselessfacts.jsph.pl/
 
     def give_fun_fact(self):
         url = "https://uselessfacts.jsph.pl/random.json?language=en"
@@ -261,8 +264,9 @@ class Window(Frame):
 
     ###
 
-    # functions to provide a quote randomly from the first page of goodreads.com using web scraping
-    # They are: random_quote, scrape_website, quote
+    #functions to provide a quote randomly from the first page of goodreads.com using web scraping
+    #They are: random_quote, scrape_website, quote
+    #The code was followed according to this tutorial video: https://www.youtube.com/watch?v=gH0Winlel4Q
 
     def random_quote(self, quoteList, AuthorList):
         length = len(quoteList)
@@ -311,6 +315,10 @@ class Window(Frame):
         for data in data_list.find_all('li'):
             factList.append(data.text)
         return factList
+
+    #function for api call to wikipedia to get a list of events that happen on a particular day
+    #it uses custom arguments using argparse module that calls an api to scrape data from: https://en.wikipedia.org/wiki/Wikipedia:On_this_day/Today
+    #code reference: https://github.com/saroz014/this-day-in-history/blob/master/find_this_day.py
 
     def onThisDay(self):
         MONTHS = {1: ('January', 31),
